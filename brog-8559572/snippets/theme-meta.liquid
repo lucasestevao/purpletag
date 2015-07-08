@@ -1,0 +1,147 @@
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width"/>
+{% if page.url == '/pages/zana-is-now-purpletag' %}
+<META NAME="ROBOTS" CONTENT="NOINDEX, FOLLOW">
+{% endif %}
+  
+<link rel="shortcut icon" type="image/x-icon" href="{{ 'favicon.png' | asset_url }}">
+
+<link rel="apple-touch-icon" sizes="57x57" href="{{ 'logo_apple_57.png' | asset_url }}">
+<link rel="apple-touch-icon" sizes="72x72" href="{{ 'logo_apple_72.png' | asset_url }}">
+<link rel="apple-touch-icon" sizes="114x114" href="{{ 'logo_apple_114.png' | asset_url }}">
+  
+{% if template == 'index' %}
+    {% if settings.seo_tagline != '' %}
+		<!-- seo tagline -->
+        <title>{{ settings.seo_tagline }}</title>
+    {% else %}
+		<!-- shop name -->
+        <title>{{ shop.name }}</title>
+    {% endif %}
+      <script type="application/ld+json">
+        {
+           "@context": "http://schema.org",
+           "@type": "WebSite",
+           "url": "http://purpletag.ie/",
+           "potentialAction": {
+             "@type": "SearchAction",
+             "target": "http://purpletag.ie/search?q={search_term_string}",
+             "query-input": "required name=search_term_string"
+           }
+        }
+      </script>
+  {% elsif template == 'collection' %}
+<title>Buy {{ filterTitle | escape }} in Ireland - {{ shop.name }}</title>
+{% elsif template == '404' %}
+  <title>Page Not Found - {{ shop.name }}</title>
+{% elsif page_title == 'Products' %}
+  <!-- products page -->
+  <title>{% for tag in current_tags %}{{ tag | capitalize | replace: 'Fitflop', 'FitFlop' | replace: 'Marcotozzi', 'Marco Tozzi' | replace: 'Lellikelly', 'Lelli Kelly' | replace: 'Irregularchoice', 'Irregular Choice' | replace: 'Soliver', 'S Oliver' | escape }} {% endfor %}- {{ shop.name }}</title>
+{% else %}
+  <!-- tags -->
+  <title>{% for tag in current_tags %}{{ tag | capitalize | replace: 'Fitflop', 'FitFlop' | replace: 'Marcotozzi', 'Marco Tozzi' | replace: 'Lellikelly', 'Lelli Kelly' | replace: 'Irregularchoice', 'Irregular Choice' | replace: 'Soliver', 'S Oliver' | escape }} {% endfor %}{{ page_title | replace: 'All', 'Shoes'}} {% if current_page != 1 %}(Page {{ current_page }}) {% endif %}- {{ shop.name }}</title>
+{% endif %}
+
+{% if template == 'collection' %}
+<meta name="description" content="{% if current_page != 1 %}Page {{ current_page }}: {% endif %}Buy{{ filterTitle | escape }} on Ireland's easiest online shoe shop. Try at home with our free delivery & free return. Quick delivery to anywhere in Ireland." />
+{% elsif page_description != '' %}
+<meta name="description" content="{{ page_description | escape }}" />
+{% else %}
+    {% assign maxwords = 30 %}
+    {% if template contains 'product' %}
+        {% capture productdesc %}{% include 'process-html-strip' with product.description %}{% endcapture %}
+        <meta name="description" content="{{ productdesc | strip_html | strip_newlines | truncatewords: maxwords | escape }}" />
+    {% elsif template contains 'page' %}
+        {% capture page_trunc %}{% include 'process-html-strip' with page.content %}{% endcapture %}
+        <meta name="description" content="{{ page_trunc | strip_html | strip_newlines | truncatewords: maxwords | escape }}" />
+    {% elsif template == 'index' %}
+        <meta name="description" content="{{ shop.description | escape }}" />
+    {% endif %}
+{% endif %}
+
+{% if template == 'collection' and collection.handle == 'all' and current_tags | size == 1 %}
+<link rel="canonical" href="http://purpletag.ie/collections/{{ current_tags }}" />
+{% else %}
+<link rel="canonical" href="{{ canonical_url }}" />
+{% endif%}
+
+<script type="text/javascript">
+  function trackOutboundLink(link, toSite) { 
+    trackLink(link.href, 'Link to other site', toSite, document.URL);
+  }
+
+  function trackSocialShare(link, platform) { 
+    try { 
+      ga('send', 'event', 'Social share' , platform, document.URL); 
+    } catch(err){}
+
+    var win = window.open(link, 'PTshare');
+    win.focus();
+  }
+  
+  function trackLink(link, category, action, label) { 
+    try { 
+      ga('send', 'event', category , action, label); 
+    } catch(err){}
+     
+    setTimeout(function() {
+      document.location.href = link;
+    }, 100);
+  }
+
+  function trackInternalLink(link, category, action) { 
+    try { 
+      ga('send', 'event', category , action, document.URL); 
+    } catch(err){}
+     
+    setTimeout(function() {
+    document.location.href = link.href;
+    }, 100);
+  }
+</script>
+
+<meta name="alexaVerifyID" content="bPQwcQupCRRVkidw_nLTeYrRzSM" />
+
+{% comment %} Below 'og' tags are for Facebook {% endcomment %}
+<meta property="og:site_name" content="{{ shop.name | escape }}" />
+{% if template == 'product' %}
+<meta property="og:image" content="http:{{ product.featured_image | product_img_url: 'large' }}" />
+    <meta property="og:description" content="{{ productdesc | strip_html | truncatewords:20 | escape }}" />
+    <meta property="og:title" content="{{ product.title | escape }}" />
+    <meta property="og:type" content="product" />
+    <meta property="og:url" content="{{ shop.url }}{{ product.url }}" />
+{% elsif template contains 'article' %}
+    <meta property="og:title" content="{{ article.title | escape }} - {{ shop.name | escape }}" />
+    <meta property="og:description" content="{{ article.content | strip_html | truncatewords:20 | escape }}" />
+    <meta property="og:url" content="{{ shop.url }}{{ article.url }}" />
+    <meta property="og:type" content="article" />
+    {% if article.content contains '<img' %}
+        {% assign src = article.content | split: 'src="' %}
+        {% assign src = src[1] | split: '"' | first | replace: '//cdn', 'http://cdn' | replace: 'http:http://', 'http://' %}
+        {% if src %}<meta property="og:image" content="{{ src }}" />{% endif %}
+    {% elsif settings.use_logo_image == true %}
+        <meta property="og:image" content="{{ 'logo.png' | asset_url }}" />
+    {% endif %}
+{% else %}
+    <meta property="og:type" content="website" />
+    {% if settings.use_logo_image == true %}
+        <meta property="og:image" content="{{ 'logo.png' | asset_url }}" />
+    {% endif %}
+    {% if template == 'index' %}
+        <meta property="og:url" content="{{ shop.url }}" />
+    {% elsif template == 'blog' %}
+        <meta property="og:url" content="{{ shop.url }}{{ blog.url }}" />
+    {% endif %}
+{% endif %}
+
+{% if template == 'product' %}
+  <script src="//www.google-analytics.com/cx/api.js?experiment=DHbLQQsLRL6ywiVHYrXzCg"></script>
+  <script>
+    // Ask Google Analytics which variation to show the user.
+    var chosenVariation = cxApi.chooseVariation();
+  </script>
+{% endif %}

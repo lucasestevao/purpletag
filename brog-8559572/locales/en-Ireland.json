@@ -1,0 +1,82 @@
+{
+  "shopify": {
+    "checkout": {
+      "contact": {
+        "first_name_placeholder": "Mary",
+        "last_name_placeholder": "Murphy",
+        "address2_label": "Address line 2",
+        "address1_label": "Address line 1",
+        "city_label": "City or town",
+        "city_placeholder": "Your city\/town",
+        "phone_placeholder": "Required for delivery",
+        "optional_phone_placeholder": "",
+        "zip_or_postal_code_label": "County or postcode",
+        "shipping_address_title": "Delivery Address",
+        "contact_and_shipping_address_title": "Contact & Delivery Address",
+        "address1_placeholder": "Your address",
+        "zip_or_postal_code_placeholder": "",
+        "address2_placeholder": "",
+        "province_label": "",
+        "province_placeholder": "",
+        "phone_label": "",
+        "zip_code_placeholder": "County or postcode",
+        "optional_first_name_placeholder": "Mary",
+        "optional_address2_placeholder": ""
+      },
+      "shipping": {
+        "title": "Delivery",
+        "no_rates_for_country_notice": "Sorry, we don't delivery to {{ country }}.",
+        "please_enter_your_shipping_information_notice": "Please enter your delivery details.",
+        "select_placeholder": "Please select a delivery method",
+        "waiting_on_rate_notice": "Please wait while we update the delivery rates..."
+      },
+      "general": {
+        "error_title": "Oops!"
+      },
+      "stock": {
+        "items_unavailable_notice": "Some of the items in your basket were sold out during the checkout process.",
+        "product_column_header": "Shoes",
+        "removed_from_cart_notice": "Removed from basket",
+        "remove_from_cart_button_label": "Remove from basket",
+        "go_back_to_cart_button_label": "Go back to my basket"
+      },
+      "order_summary": {
+        "free_shipping_discount_label": "Free delivery",
+        "cart_does_not_meet_discount_requirements_notice": "Your basket does not meet the requirements for the discount",
+        "shipping_label": "Delivery",
+        "taxes_label": "VAT"
+      },
+      "payment": {
+        "name_on_card_placeholder": "Mary Murphy",
+        "card_verification_value_explanation": "3 digit security code on the back of the card"
+      },
+      "thank_you": {
+        "page_title": "Thanks!",
+        "confirmation_email_sent_text": "We have sent a confirmation email to {{ email }}",
+        "title": "Thanks!"
+      }
+    },
+    "addresses": {
+      "postal_code": "County or postcode",
+      "postcode": "County or postcode",
+      "zip_code": "County or postcode",
+      "region": "County",
+      "province": "",
+      "state": "",
+      "state_and_territory": ""
+    },
+    "errors": {
+      "blank": "must be filled in",
+      "empty": "must be filled in",
+      "discount_limit_reached": "This discount has been used up",
+      "discount_not_found": "Could not find a discount for that code",
+      "gift_card_depleted": "There is no money left on this gift card",
+      "gift_card_expired": "Gift card has expired",
+      "full_name_required": "Please enter your name."
+    },
+    "page_titles": {
+      "shopping_cart": "Your Shopping Basket",
+      "not_found": "Page Not Found"
+    }
+  }
+}

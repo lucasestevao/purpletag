@@ -1,0 +1,67 @@
+{% for menu_header in shop.metafields.pt_filter_menu["185-vendor"] %}
+{% assign menu_items = menu_header | split: ',' %}
+{% for menu_item in menu_items %}
+  {% if current_tags contains menu_item or collection.handle == menu_item %}
+	{% assign filterTitle = filterTitle | append: " " | append: collections[menu_item].title %}
+    {% assign searchBrandTag = menu_item %}
+  {% endif %}
+{% endfor %}
+{% endfor %}
+
+{% for menu_header in shop.metafields.pt_filter_menu["188-colour"] %}
+{% assign menu_items = menu_header | split: ',' %}
+{% for menu_item in menu_items %}
+  {% if current_tags contains menu_item or collection.handle == menu_item %}
+	{% assign filterTitle = filterTitle | append: " " | append: collections[menu_item].title %}
+  {% endif %}
+{% endfor %}
+{% endfor %}
+
+{% for menu_header in shop.metafields.pt_filter_menu["189-features"] %}
+{% assign menu_items = menu_header | split: ',' %}
+{% for menu_item in menu_items %}
+  {% if current_tags contains menu_item or collection.handle == menu_item %}
+	{% assign filterTitle = filterTitle | append: " " | append: collections[menu_item].title %}
+  {% endif %}
+{% endfor %}
+{% endfor %}
+
+{% for menu_header in shop.metafields.pt_filter_menu["186-style"] %}
+{% assign menu_items = menu_header | split: ',' %}
+{% for menu_item in menu_items %}
+  {% if current_tags contains menu_item or collection.handle == menu_item %}
+	{% assign filterTitle = filterTitle | append: " " | append: collections[menu_item].title %}
+  {% endif %}
+{% endfor %}
+{% endfor %}
+
+{% for menu_header in shop.metafields.pt_filter_menu["184-product-type"] %}
+{% assign menu_items = menu_header | split: ',' %}
+{% for menu_item in menu_items %}
+  {% if current_tags contains menu_item or collection.handle == menu_item %}
+{% assign hasType = true %}
+	{% assign filterTitle = filterTitle | append: " " | append: collections[menu_item].title %}
+  {% endif %}
+{% endfor %}
+{% endfor %}
+{% unless hasType %}
+{% assign filterTitle = filterTitle | append: " Shoes" %}
+{% endunless %}
+
+{% for menu_header in shop.metafields.pt_filter_menu["183-for"] %}
+{% assign menu_items = menu_header | split: ',' %}
+{% for menu_item in menu_items %}
+  {% if current_tags contains menu_item or collection.handle == menu_item %}
+	{% assign filterTitle = filterTitle | append: " for " | append: collections[menu_item].title %}
+  {% endif %}
+{% endfor %}
+{% endfor %}
+
+{% for menu_header in shop.metafields.pt_filter_menu["187-price"] %}
+{% assign menu_items = menu_header | split: ',' %}
+{% for menu_item in menu_items %}
+  {% if current_tags contains menu_item or collection.handle == menu_item %}
+	{% assign filterTitle = filterTitle | append: " - " | append: collections[menu_item].title %}
+  {% endif %}
+{% endfor %}
+{% endfor %}

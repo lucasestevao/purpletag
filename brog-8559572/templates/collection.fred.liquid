@@ -1,0 +1,330 @@
+{% assign row_limit = settings.products_per_row_coll | plus: 0 %}
+{% assign total_prods_to_show = row_limit | times: settings.product_rows_on_coll_page %}
+{% paginate collection.products by total_prods_to_show %}
+<div class="sixteen columns">
+    <div id="crumbs">
+        <a href="/" title="Home">Home</a>
+        &raquo;
+        <a href="{{ collection.url }}">{{ collection.title | escape }}</a>
+    </div><!-- #crumbs -->
+    
+    {% if settings.show_social_coll %}
+    <div class="social floating">
+        <span class="label">{{ settings.text_sharethis }}</span>
+        {% include 'social-sharing' %}
+    </div>
+    {% endif %}
+
+  {% for product_vendor in collection.all_vendors %}
+    {% capture lowercase_vendor %}{{ product_vendor | camelcase | downcase }}{% endcapture %}
+    {% capture camelcase_vendor %}{{ product_vendor | camelcase | replace: 'Fitflop', 'FitFlop' }}{% endcapture %}
+    {% if current_tags contains camelcase_vendor %}
+      {% assign searchBrand = lowercase_vendor %}
+    {% elsif current_tags contains lowercase_vendor %}
+      {% assign searchBrand = lowercase_vendor %}
+    {% elsif current_tags contains product_vendor %}
+      {% assign searchBrand = lowercase_vendor %}
+    {% endif %}
+  {% endfor %}
+  
+  {% if searchBrand %}
+    {% capture brandCollection %}{{ searchBrand }}-brand{% endcapture %}
+    {% if collections[brandCollection].description %}
+      <div id="brand-info">
+          {{ collections[brandCollection].description }}
+      </div>
+    {% endif %}
+  {% endif %}
+
+  <div id="refine-search">
+    <ul class="clearfix">
+      <li class="filter">
+        <span class="filter-title">Pick your style</span>
+        <!-- find out if we are in Women or Kids -->
+        {% if collection.handle contains 'women' %}{% assign current_category = 'women' %}{% endif %}
+        {% if collection.handle == 'women-best-sellers' %}{% assign current_category = 'women' %}{% endif %}
+        {% if collection.handle == 'girls' %}{% assign current_category = 'girls' %}{% endif %}
+        {% if collection.handle == 'boys' %}{% assign current_category = 'boys' %}{% endif %}
+        {% if collection.handle == 'baby' %}{% assign current_category = 'baby' %}{% endif %}
+        
+        <!-- check all sub-collections for women -->
+        {% for link in linklists.women.links %}
+        {% if link.type == 'collection_link' %}
+        {% if link.active %}{% assign current_category = 'women' %}{% endif %}
+        {% endif %}
+        {% endfor %}
+  
+        <!-- check all sub-collections for girls -->
+        {% for link in linklists.girls.links %}
+        {% if link.type == 'collection_link' %}
+        {% if link.active %}{% assign current_category = 'girls' %}{% endif %}
+        {% endif %}
+        {% endfor %}
+  
+        <!-- check all sub-collections for boys -->
+        {% for link in linklists.boys.links %}
+        {% if link.type == 'collection_link' %}
+        {% if link.active %}{% assign current_category = 'boys' %}{% endif %}
+        {% endif %}
+        {% endfor %}
+  
+
+        <!-- check all sub-collections for baby -->
+        {% for link in linklists.baby.links %}
+        {% if link.type == 'collection_link' %}
+        {% if link.active %}{% assign current_category = 'baby' %}{% endif %}
+        {% endif %}
+        {% endfor %}
+  
+        <select class="coll-picker" name="type">
+          <!-- show these options if we are in one of the women collections -->
+          {% if current_category == 'women' %}
+          <option value="women" {% if collection.handle == 'women' %}selected {% endif %}>All Women Shoes</option>
+          {% for link in linklists.women.links %}
+          {% if link.type == 'collection_link' %}
+          <option value="{{ link.object.handle }}" {% if link.active %}selected{% endif %}>{{ link.title }}</option>
+          {% endif %}
+          {% endfor %}
+          {% endif %}
+          
+          <!-- show these options if we are in one of the girls collections -->
+          {% if current_category == 'girls' %}
+          <option value="girls" {% if collection.handle == 'girls' %}selected {% endif %}>All Girls Shoes</option>
+          {% for link in linklists.girls.links %}
+          {% if link.type == 'collection_link' %}
+          <option value="{{ link.object.handle }}" {% if link.active %}selected{% endif %}>{{ link.title }}</option>
+          {% endif %}
+          {% endfor %}
+          {% endif %}
+          
+          <!-- show these options if we are in one of the boys collections -->
+          {% if current_category == 'boys' %}
+          <option value="boys" {% if collection.handle == 'boys' %}selected {% endif %}>All Boys Shoes</option>
+          {% for link in linklists.boys.links %}
+          {% if link.type == 'collection_link' %}
+          <option value="{{ link.object.handle }}" {% if link.active %}selected{% endif %}>{{ link.title }}</option>
+          {% endif %}
+          {% endfor %}
+          {% endif %}
+          
+
+          <!-- show these options if we are in one of the baby collections -->
+          {% if current_category == 'baby' %}
+          <option value="baby" {% if collection.handle == 'baby' %}selected {% endif %}>All Baby Shoes</option>
+          {% for link in linklists.baby.links %}
+          {% if link.type == 'collection_link' %}
+          <option value="{{ link.object.handle }}" {% if link.active %}selected{% endif %}>{{ link.title }}</option>
+          {% endif %}
+          {% endfor %}
+          {% endif %}
+          
+          <!-- we are neither in 'women' nor 'kids', so default to these options -->
+          {% unless current_category == 'girls' %}
+          {% unless current_category == 'boys' %}
+          {% unless current_category == 'baby' %}
+          {% unless current_category == 'women' %}
+          <option value="all" selected>Shoe Style</option>
+          {% unless collection.handle contains 'kids' %}
+          <!-- don't show the Women category if we are in a kids promotion collection -->
+          <option value="women">Women Shoes</option>
+          {% endunless %}
+          <option value="girls">Girls Shoes</option>
+          <option value="boys">Boys Shoes</option>
+          <option value="baby">Baby Shoes</option>
+          {% endunless %}
+          {% endunless %}
+          {% endunless %}
+          {% endunless %}
+        </select>
+      </li>
+      <li class="filter">
+        <span class="filter-title">Brand</span>
+        <select class="coll-filter" name="brand">
+          <option value="">Brand</option>
+          {% for product_vendor in collection.all_vendors %}
+          {% capture lowercase_vendor %}{{ product_vendor | camelcase | downcase }}{% endcapture %}
+          {% capture camelcase_vendor %}{{ product_vendor | camelcase | replace: 'Fitflop', 'FitFlop' }}{% endcapture %}
+          {% if collection.all_tags contains camelcase_vendor %}
+          <option value="{{ camelcase_vendor }}"{% if current_tags contains camelcase_vendor %} selected{% endif %}>{{ product_vendor | replace: 'Fitflop', 'FitFlop' }}</option>
+          {% elsif collection.all_tags contains lowercase_vendor %}
+          <option value="{{ lowercase_vendor }}"{% if current_tags contains lowercase_vendor %} selected{% endif %}>{{ product_vendor | replace: 'Fitflop', 'FitFlop' }}</option>
+          {% elsif collection.all_tags contains product_vendor %}
+          <option value="{{ product_vendor }}"{% if current_tags contains product_vendor %} selected{% endif %}>{{ product_vendor | replace: 'Fitflop', 'FitFlop' }}</option>
+          {% endif %}
+          {% endfor %}
+        </select>
+      </li>
+      <li class="filter">
+        {% assign tags = 'beige,black,blue,brown,copper,cream,gold,green,grey,multi,navy,orange,pink,purple,red,silver,tan,white,yellow' | replace: ' ,', ',' | replace: ', ', ',' | split: ',' %}
+        <span class="filter-title">Colour</span>
+        <select class="coll-filter" name="colour">
+          <option value="">Colour</option>
+          {% for tag in tags %}
+          {% if current_tags contains tag %}
+          <option value="{{ tag | handle }}" selected>{{ tag | capitalize }}</option>
+          {% elsif collection.all_tags contains tag %}
+          <option value="{{ tag | handle }}">{{ tag | capitalize }}</option>
+          {% endif %}
+          {% endfor %}
+        </select>
+      </li>
+    </ul>
+  </div> 
+<script>
+  /* Product Tag Filters - Good for any number of filters on any type of collection pages */
+  /* Give you product tag filter select element a class of coll-filter */
+  /* Give your collection select a class of coll-picker */
+  /* Brought to you by Caroline Schnapp */
+  var allFilters = jQuery('.coll-filter, .coll-picker');
+  allFilters.change(function() {
+    if(_gaq) {
+    	_gaq.push(['_trackEvent', 'Refine Search', 'Refine ' + this.name, '{{ current_category | capitalize }}:' + this.value]);
+    }
+    /*pageTracker._trackEvent('Refine Search', 'Refine ' + this.name, '{{ current_category | capitalize }}:' + this.value);*/
+		var newTags = [];
+    jQuery('.coll-filter').each(function() { 
+      if (jQuery(this).val()) {
+        newTags.push(jQuery(this).val());
+      }
+    });
+    if (newTags.length) {
+      var query = newTags.join('+');
+      if (jQuery('.coll-picker').length) {
+        window.location.href = '/collections/' + jQuery('.coll-picker').val() + '/' + query;
+      } else {
+        window.location.href = jQuery('{{ 'tag' | link_to_tag: 'tag' }}').attr('href').replace('tag', query);
+      }
+    } else {
+      if (jQuery('.coll-picker').length) {
+        window.location.href = '/collections/' + jQuery('.coll-picker').val();
+      } else {
+        {% if collection.handle %}
+        window.location.href = '/collections/{{ collection.handle }}';
+        {% elsif collection.products.first.type == collection.title %}
+        window.location.href = '{{ collection.title | url_for_type }}';
+        {% elsif collection.products.first.vendor == collection.title %}
+        window.location.href = '{{ collection.title | url_for_vendor }}';
+        {% endif %}
+      }
+    }
+  });
+</script>  
+
+    {% comment %} Add the tags to the <h1>, so the user can see what they have selected. 
+  					Also, replace the 'Products' term with Shoes. Fred 2013-09-18 {% endcomment %}
+{% if collection.title == 'Products' %}
+  {% capture shownTitle %}{% for tag in current_tags %}{{ tag | capitalize | replace: 'Fitflop', 'FitFlop' | replace: 'Marcotozzi', 'Marco Tozzi' | replace: 'Lellikelly', 'Lelli Kelly' | replace: 'Irregularchoice', 'Irregular Choice' | replace: 'Soliver', 'S Oliver' }} {% endfor %}Shoes{% endcapture %}
+{% else %}
+  {% capture shownTitle %}{% for tag in current_tags %}{{ tag | capitalize | replace: 'Fitflop', 'FitFlop' | replace: 'Marcotozzi', 'Marco Tozzi' | replace: 'Lellikelly', 'Lelli Kelly' | replace: 'Irregularchoice', 'Irregular Choice' | replace: 'Soliver', 'S Oliver' }} {% endfor %}{{ collection.title | replace: 'All', 'Shoes'}}{% endcapture %}
+{% endif %}
+  <h1>{{ buildTitle | escape }}</h1>  
+	
+    {% if collection.description.size > 7 %}
+        <div class="content-block row">
+            {{ collection.description }}
+        </div><!-- .pagecontent -->
+    {% endif %}
+    
+    <script>
+      var refineSearchOpenCount = 0;
+    </script>
+    <a href="#refineSearchMenu" class="filter-toggle" onclick="$('div.menu').toggle(); if(refineSearchOpenCount++ == 0) { _gaq.push(['_trackEvent', 'Open Info' , 'Refine Search', '{{ shownTitle | replace: "'", "\\'" | escape }}']); }; return true;">Refine search</a>
+
+   
+    {% if paginate.pages > 1 or collection.tags.size > 0 %}
+        <div class="ten columns alpha">
+            <div class="paging">
+            {% if paginate.pages > 1 %}
+                {% if paginate.previous %}
+                    <a class="prev" href="{{ paginate.previous.url }}">&#8249;</a>
+                {% endif %}
+                {% for part in paginate.parts %}
+                    {% if part.is_link %}
+                        <span class="page">{{ part.title | link_to: part.url }}</span>
+                    {% else %}
+                        <span class="page current">{{ part.title }}</span>
+                    {% endif %}        
+                {% endfor %}      
+                {% if paginate.next %}
+                    <a class="next" href="{{ paginate.next.url }}">&#8250;</a>
+                {% endif %}
+            {% endif %}
+            </div>&nbsp;
+        </div>
+        
+        <!--div class="six columns omega collectionfilter">
+            {% if collection.handle and collection.tags.size > 0 %}
+            <select id="tagfilter">
+                {% if current_tags and current_tags.size > 0 %}
+                    <option value="{{ shop.url }}/collections/{{ collection.handle }}" selected="selected">All Products</option>
+                {% else %}
+                    <option value="{{ shop.url }}/collections/{{ collection.handle }}">All Products</option>
+                {% endif %}
+                    
+                {% for tag in collection.all_tags %}
+                    {% comment %}Don't show tags used for relating products together{% endcomment %}
+                    {% capture tagstart %}{{ tag | remove_first: 'related-' }}{% endcapture %}
+                    {% if tagstart == tag %}
+                        {% if current_tags contains tag %}
+                            <option value="{{ shop.url }}/collections/{{ collection.handle }}/{{ tag | handleize }}" selected="selected">{{ tag }}</option>
+                        {% else %}
+                            <option value="{{ shop.url }}/collections/{{ collection.handle }}/{{ tag | handleize }}">{{ tag }}</option>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <script>
+            $(function(){
+                $('#tagfilter').change(function(){
+                    window.location = $(this).val();
+                });
+            });
+            </script>
+            {% endif %}
+        &nbsp;</div-->
+    {% endif %}
+</div>
+{% if collection.products.size == 0 %}
+    <div class="sixteen columns">There are no products here.</div>
+{% else %}
+<div>
+      <div class="four columns">
+        {% include 'filter-menu' %}
+	  </div>
+      <div class="twelve columns">
+    <div class="productlist">
+    {% assign has_filter_menu = true %}
+    {% for product in collection.products %}
+        {% include 'product-list-repeatable-item' with product %}
+    {% endfor %}
+    </div><!-- .productlist -->
+	  </div>
+</div>
+    
+{% endif %}
+
+{% if settings.use_inf_scroll == true %}
+<script>
+var scrollCount = 0;
+$('.productlist').infinitescroll({
+    navSelector  : "div.paging",
+    nextSelector : "div.paging .next",
+    itemSelector : "#maincontent .productlist .product, #maincontent .productlist .cf",
+    loading: {
+        img         : '{{ settings.loading_graphic | asset_url }}',
+        msgText     : 'Loading more products...',
+        finishedMsg : 'There are no more products in this collection.',
+      bufferPx : 120,
+      animate      : true
+    }
+}, function(items){    
+    $(items).find('img:not(.altimg)').each(function(){
+        $(this).trigger('initprodimg');
+    });
+  // track the scroll in Google Analytics
+  scrollCount = scrollCount + 1;
+  _gaq.push(['_trackEvent', 'Scroll', 'InfiniteScroll', "{{ shownTitle }}", scrollCount]);
+});
+</script>
+{% endif %}
+{% endpaginate %}

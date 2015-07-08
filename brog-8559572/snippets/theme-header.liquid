@@ -1,0 +1,269 @@
+<div id="fade"></div>
+<div id="overlay" title="Dialog Title">Updating...</div>
+<div id="fb-root"></div>
+<script>
+  window.fbAsyncInit = function() {
+    // init the FB JS SDK
+    FB.init({
+      appId      : '628886270486913',                        // App ID from the app dashboard
+      status     : false,                                 // Check Facebook Login status
+      xfbml      : true                                  // Look for social plugins on the page
+    });
+
+    // Additional initialization code such as adding Event Listeners goes here
+  };
+
+  // Load the SDK asynchronously
+  (function(){
+     // If we've already installed the SDK, we're done
+     if (document.getElementById('facebook-jssdk')) {return;}
+
+     // Get the first script element, which we'll use to find the parent node
+     var firstScriptElement = document.getElementsByTagName('script')[0];
+
+     // Create a new script element and set its id
+     var facebookJS = document.createElement('script'); 
+     facebookJS.id = 'facebook-jssdk';
+
+     // Set the new script's source to the source of the Facebook JS SDK
+     facebookJS.src = '//connect.facebook.net/en_US/all.js';
+
+     // Insert the Facebook JS SDK into the DOM
+     firstScriptElement.parentNode.insertBefore(facebookJS, firstScriptElement);
+   }());
+</script>
+<div id="util-bar" style="display: none">
+    {% if shop.customer_accounts_enabled and customer %}
+        <div class="container cf util-bar-upperarea">
+            <div class="sixteen columns">
+                <a class="button" href="/account">Manage your account</a>
+                <a class="button" href="/account/logout">Logout</a>
+            </div>
+        </div>
+    {% elsif shop.customer_accounts_enabled %}
+    	<div id="util-bar-login" class="container cf util-bar-upperarea">
+            <div class="inputwrap sixteen columns formfields">
+                <form action="/account/login" method="post">
+        			<span class="title">{{ settings.text_login }}</span>
+                    <div class="nameinputcont inputrow">
+                        <label for="headername" class="hoverlabel">Email address</label>
+        			    <input id="headername" type="text" class="nameinput" name="customer[email]" />
+                    </div>
+        			<div class="passwordinputcont inputrow">
+                        <label for="headerpassword" class="hoverlabel">Password</label>
+        				<input id="headerpassword" type="password" class="password" name="customer[password]" />
+        				<span class="forgot"><a href="/account/login">Forgot your password?</a></span>
+        			</div>
+                    <input type="submit" class="button pink" value="{{ settings.text_login }}" />
+                </form>
+            </div>
+    	</div>
+    {% endif %}
+    <div class="container">
+        <div class="cartsocialcont {% if settings.search_pos == 'tl' %}search-in-tagline{% else %}text-in-tagline{% endif %} sixteen columns {% if settings.search_pos == 'tr-sl' %}search-expandable{% endif %}">
+            {% if settings.search_pos == 'tl' %}
+                <div class="tagline-area">
+                    <div id="searchcont" class="inline formfields">
+                        <form class="inputrow" action="/search" method="get">
+                            <label class="hoverlabel" for="searchinput">{{ settings.text_search }}</label>
+                            <input class="search defaulttextjs" name="q" id="searchinput" type="text" />
+                            <input type="submit" value="→" />
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+                <div class="tagline-area tagline">
+           	 	  {% if settings.sm_rss or settings.sm_facebook or settings.sm_twitter or settings.sm_tumblr or settings.sm_pinterest or settings.sm_youtube or settings.sm_instagram %}
+                  <div class="socialicons actions-item">
+                      <ul>
+                      {% if settings.sm_rss %}
+                          <li class="rss"><a title="Follow our RSS" target="_blank" href="{{ blogs[settings.sm_rss_blog].url }}.atom">RSS</a></li>
+                      {% endif %}
+                      {% if settings.sm_facebook %}
+                          <li class="facebook"><a title="Follow us on Facebook" target="_blank" href="{{settings.sm_facebook_link}}">Facebook</a></li>
+                      {% endif %}
+                      {% if settings.sm_twitter %}
+                          <li class="twitter"><a title="Follow us on Twitter" target="_blank" href="{{settings.sm_twitter_link}}">Twitter</a></li>
+                      {% endif %}
+                      {% if settings.sm_tumblr %}
+                          <li class="tumblr"><a title="Follow our Tumblr" target="_blank" href="{{settings.sm_tumblr_link}}">Tumblr</a></li>
+                      {% endif %}
+                      {% if settings.sm_pinterest %}
+                          <li class="pinterest"><a title="Follow us on Pinterest" target="_blank" href="{{settings.sm_pinterest_link}}">Pinterest</a></li>
+                      {% endif %}
+                      {% if settings.sm_youtube %}
+                          <li class="youtube"><a title="Follow us on YouTube" target="_blank" href="{{settings.sm_youtube_link}}">YouTube</a></li>
+                      {% endif %}
+                      {% if settings.sm_instagram %}
+                          <li class="instagram"><a title="Follow us on Instagram" target="_blank" href="{{settings.sm_instagram_link}}">Instagram</a></li>
+                      {% endif %}
+                      </ul>
+                  </div>
+                  {% endif %}
+          		</div>
+            {% endif %}
+            
+    		<div class="actions">
+                
+               
+                {% if shop.customer_accounts_enabled and customer %}
+                    <a href="#" class="account logindrop actions-item">{{ settings.text_youraccount }}</a>
+                {% elsif shop.customer_accounts_enabled %}
+                    {% if settings.show_reg %}
+                        <span class="actions-item">{{ 'Register' | customer_register_link }}</span>
+                    {% endif %}
+    			    <a href="#" class="account logindrop actions-item">{{ settings.text_login }}</a>
+                {% endif %}
+              <a class="actions-item {% if cart.item_count > 0 %}filled{% else %}empty{% endif %}" href="/{% if template != 'cart' %}cart{% else %}checkout{% endif %}" id="cartsummary">{{ settings.text_cart }} <span id="headercartvals">({{ cart.item_count }}) {{ cart.total_price | money_with_currency }}</span></a>
+                {% if settings.search_pos == 'tr-f' %}
+                    <div id="searchcont" class="inline formfields actions-item">
+                        <form class="inputrow" action="/search" method="get">
+                            <label class="hoverlabel" for="searchinput">{{ settings.text_search }}</label>
+                            <input class="search defaulttextjs" name="q" id="searchinput" type="text" />
+                            <input type="submit" value="→" />
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+		</div>
+        {% if settings.search_pos == 'tr-sl' %}
+        <div id="searchcont" class="slideout formfields dohover smarttextinput">
+            <a href="#" class="searchbtn">{{ settings.text_search }}</a>
+            <div class="searchformwrap">
+                <form class="inputrow" action="/search" method="get">
+                    <label class="hoverlabel" for="searchinput">{{ settings.text_search }}</label>
+                    <input class="search defaulttextjs" name="q" id="searchinput" type="text" />
+                    <input type="submit" value="→" />
+            	</form>
+            </div>
+        </div>
+        {% endif %}
+	</div>
+</div>
+<div class="bodywrap">
+  <header id="pageheader">
+    <div id="basket">
+      <a class="actions-item {% if cart.item_count > 0 %}filled{% else %}empty{% endif %}" href="/{% if template != 'cart' %}cart{% else %}checkout{% endif %}" id="cartsummary">{{ settings.text_cart }} <span id="headercartvals">({{ cart.item_count }})</span></a>
+    </div>
+    <div id="trustPilotBadge">
+      <a href="http://ie.trustpilot.com/review/purpletag.ie" onclick="trackOutboundLink(this, 'trustpilot.com in header'); return false;" title="See what our customers say about us on independent review site TrustPilot">
+            <img id="trustPilotNumber1" style="position: absolute;" src="{{ 'trustpilot-badge-280-1.png' | asset_url }}" alt="Best in category">
+      </a>
+    </div>
+      {% if template == 'index' %}
+        <h1 id="logo">
+          <a href="/pages/delivery-return" id="tagline">Free delivery &amp; return</a>
+          <!-- <a href="http://purpletag.ie/pages/christmas-deadline" id="xmasdelivery">Christmas Delivery Dates</a> -->
+          <a href="http://purpletag.ie" class="image-logo"><img src="{{ 'PurpleTagLogo.svg' | asset_url }}"  onerror="this.src='{{ 'logo.png' | asset_url }}'" alt="{{ shop.name }}" title="Shoes Online from {{ shop.name }}" /></a>
+		</h1>
+      {% else %}
+        <div id="logo">
+          <a href="/pages/delivery-return" id="tagline">Free delivery &amp; return</a>
+          <!-- <a href="http://purpletag.ie/pages/christmas-deadline" id="xmasdelivery">Christmas Delivery Dates</a> -->
+          <a href="http://purpletag.ie" class="image-logo"><img src="{{ 'PurpleTagLogo.svg' | asset_url }}"  onerror="this.src='{{ 'logo.png' | asset_url }}'" alt="{{ shop.name }}" title="Shoes Online from {{ shop.name }}" /></a>
+	    </div>
+      {% endif %}
+      <nav>
+		<form class="inputrow formfields navsearch" action="/search" method="get">
+            <label class="hoverlabel" for="navsearch">{{ settings.text_search }} PurpleTag</label>
+            <input class="search defaulttextjs" name="q" id="navsearch" type="text" /><input type="submit" value="&#xf002;" />
+        </form>
+        <button class="opensearch" onclick="$('#mobilesearchform').toggle()">&#xf002;</button>
+        {% assign firstliclass = ' first' %}
+          <ul>
+              {% for link in linklists.main-menu.links %}
+                  <li class='menu-{{ link.title || handle }}{{ firstliclass }}'>
+                      {% assign firstliclass = '' %}
+                      {% comment %} If catalog nav, show collections underneath {% endcomment %}
+                      {% if link.title == 'Catalog' %}
+                    <a class="hasdropdown" href="{{ link.url }}">{{ settings.text_catalog }}</a>
+                          <ul>
+                          {% for collection in collections %}
+                              {% assign handlefirst = collection.handle | split: '-' | first %}
+                              {% if collection.handle != 'all' and handlefirst != 'frontpage' %}
+                              <li>{{ collection.title | link_to: collection.url }}</li>
+                              {% endif %}
+                          {% endfor %}
+                          </ul>
+
+                          {% comment %}Show Vendor list right after collections{% endcomment %}
+                          {% if shop.vendors.size > 0 and settings.vendor_list_enabled == true %}
+                              </li>
+                              <li>
+                                  <a class="hasdropdown">{{ settings.text_vendor }}</a>
+                                  <ul>
+                                      {% for vendor in shop.vendors %}
+                                          <li>{{ vendor | link_to_vendor }}</li>
+                                      {% endfor %}
+                                  </ul>
+                          {% endif %}
+
+                          {% comment %}Show Types list right after vendors{% endcomment %}
+                          {% if shop.types.size > 0 and settings.type_list_enabled == true %}
+                              </li>
+                              <li>
+                                  <a class="hasdropdown">{{ settings.text_type }}</a>
+                                  <ul>
+                                      {% for type in shop.types %}
+                                          <li>{{ type | link_to_type }}</li>
+                                      {% endfor %}
+                                  </ul>
+                          {% endif %}
+                      {% else %}
+                          {% comment %} Get any lists named the same as the parent and treat as subnav {% endcomment %}
+                          {% include 'child-menu-detector' with link %}
+                          {% if has_drop_down %}
+                                <a class="hasdropdown" href="{{ link.url }}" onclick="if(! "ontouchstart" in window) {trackLink(this.href, 'Navigation', '{{ link.title | escape }}', null); return false;}">{{ link.title | escape }}</a>
+                              <ul>
+                                <li class="all"><a href="{{ link.url }}" onclick="trackLink(this.href, 'Navigation', '{{ link.title | escape }}', null); return false;">{{ link.title | escape }}</a></li>
+                                  {% for l in linklists[child_list_handle].links %}
+                                <li class="menu-{{ link.title || handle }}-{{ l.title || handle }}"><a href="{{ l.url }}" onclick="trackLink(this.href, 'Navigation', '{{ link.title | escape }}-{{ l.title | escape }}', null); return false;">{{ l.title | escape }}</a></li>
+                                  {% endfor %}
+                              </ul>
+                          {% else %}
+                              <a href="{{ link.url }}" onclick="trackLink(this.href, 'Navigation', '{{ link.title | escape }}', null); return false;">{{ link.title }}</a>
+                          {% endif %}
+                      {% endif %}
+                  </li>
+              {% endfor %}
+          </ul>
+		<div id="mobilesearchform">
+          <form class="inputrow mobilesearch" action="/search" method="get" style="" _lpchecked="1">
+            <button type="submit">Search</button>
+            <div>
+              <input class="search defaulttextjs" name="q" id="mobilesearch" type="text">
+            </div>
+          </form>
+        </div>
+    </nav>
+    <div id="proposition">
+      <div class="first"><a href="/pages/delivery-return" title="More about our delivery policy" onclick="trackLink(this.href, 'Navigation', 'Promobar - Free Delivery', null); return false;"><strong>Free</strong> delivery<br/><i>on all orders</i></a></div><div class="last"><a href="/pages/delivery-return#return" title="More about our return policy" onclick="trackLink(this.href, 'Navigation', 'Promobar - Free Returns', null); return false;"><strong>Free</strong> return<br/><i>on all orders</i></a></div>
+    </div>
+
+
+      
+        <!-- disabled 26 Sep 2014 /Fred
+      <div id="promobar" class="sixteen columns">
+        <div class="four columns"> 
+          <p><a href="/pages/delivery-return" onclick="trackLink(this.href, 'Promobar', 'Free Delivery', null); return false;"><span>Free Delivery</span></a></p>
+        </div>
+        <div class="four columns"> 
+          <p><a href="/pages/delivery-return" onclick="trackLink(this.href, 'Promobar', 'Free Return', null); return false;">Free Return</a></p>
+        </div>
+        <div class="four columns"> 
+          <p><a href="/pages/delivery-return" onclick="trackLink(this.href, 'Promobar', 'Try at Home', null); return false;">Try at Home</a></p>
+        </div>
+        <div class="four columns"> 
+          <p><a href="/pages/student-discount" onclick="trackLink(this.href, 'Promobar', '10% Student Discount', null); return false;">10% Student Discount</a></p>
+        </div>
+      </div> -->
+  {% if template == 'collection' %}
+      <!-- TEST {{ filterTitle | escape }} -->
+
+    {% if collection.description.size > 15 %}
+          <div class="brand-image">
+              {{ collection.description }}
+          </div>
+    {% endif %}
+  {% endif %}
+  </header>

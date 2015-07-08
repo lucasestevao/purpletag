@@ -1,0 +1,465 @@
+/** 
+ * Black & White
+ * Checkout CSS
+ */
+ 
+{% assign font_heading_type_split = settings.font_heading_type | split: '|' %}
+{% if font_heading_type_split.first == 'GWF' %}
+    {% if font_heading_type_split.last == 'CUSTOM' %}
+        {% capture font_heading_type %}'{{ settings.font_heading_type_custom | split: ':' | first | replace:'+',' ' }}'{% endcapture %}
+    {% else %}
+        {% capture font_heading_type %}'{{ font_heading_type_split.last | split: ':' | first | replace:'+',' ' }}'{% endcapture %}
+    {% endif %}
+{% else %}
+    {% assign font_heading_type = settings.font_heading_type %}
+{% endif %}
+
+{% assign font_logo_type_split = settings.font_logo_type | split: '|' %}
+{% if font_logo_type_split.first == 'GWF' %}
+    {% if font_logo_type_split.last == 'CUSTOM' %}
+        {% capture font_logo_type %}'{{ settings.font_logo_type_custom | split: ':' | first | replace:'+',' ' }}'{% endcapture %}
+    {% else %}
+        {% capture font_logo_type %}'{{ font_logo_type_split.last | split: ':' | first | replace:'+',' ' }}'{% endcapture %}
+    {% endif %}
+{% else %}
+    {% assign font_logo_type = settings.font_logo_type %}
+{% endif %}
+
+{% assign font_standard_type_split = settings.font_standard_type | split: '|' %}
+{% if font_standard_type_split.first == 'GWF' %}
+    {% if font_standard_type_split.last == 'CUSTOM' %}
+        {% capture font_standard_type %}'{{ settings.font_standard_type_custom | split: ':' | first | replace:'+',' ' }}'{% endcapture %}
+    {% else %}
+        {% capture font_standard_type %}'{{ font_standard_type_split.last | split: ':' | first | replace:'+',' ' }}'{% endcapture %}
+    {% endif %}
+{% else %}
+    {% assign font_standard_type = settings.font_standard_type %}
+{% endif %}
+
+{% if settings.font_heading_type == 'GWF|CUSTOM' %}
+    @import url(//fonts.googleapis.com/css?family={{ settings.font_heading_type_custom }}:100,300,400,700,300italic,400italic,700italic);
+{% elsif font_heading_type_split.first == 'GWF' %}
+    @import url(//fonts.googleapis.com/css?family={{ font_heading_type_split.last }});
+{% endif %}
+{% if settings.font_logo_type == 'GWF|CUSTOM' %}
+    @import url(//fonts.googleapis.com/css?family={{ settings.font_logo_type_custom }}:100,300,400,700,300italic,400italic,700italic);
+{% elsif font_logo_type_split.first == 'GWF' %}
+    @import url(//fonts.googleapis.com/css?family={{ font_logo_type_split.last }});
+{% endif %}
+{% if settings.font_standard_type == 'GWF|CUSTOM' %}
+    @import url(//fonts.googleapis.com/css?family={{ settings.font_standard_type_custom }}:100,300,400,700,300italic,400italic,700italic);
+{% elsif font_standard_type_split.first == 'GWF' %}
+    @import url(//fonts.googleapis.com/css?family={{ font_standard_type_split.last }}:100,300,400,700,300italic,400italic,700italic);
+{% endif %}
+
+body {
+    background:{{ settings.color_bg_main }}
+    {% if settings.bg_image_body && settings.bg_image_body != '' %}
+    url({{ settings.bg_image_body | asset_url }}) {{ settings.bg_repeat }} center {{ settings.bg_offset_y }}
+    {% endif %};
+    font:{{ settings.font_standard_style }} {{ settings.font_standard_size }}px {{ font_standard_type }}, sans-serif;
+    line-height: 1.4em;
+    color:{{ settings.color_body_standard }};
+}
+
+h1, h2, h3 {
+    color:{{ settings.color_body_standard }};
+}
+
+a {
+    color:{{ settings.color_body_standard }};
+    text-decoration:underline;
+}
+
+#info-bar {
+    padding:10px 0;
+    background:{{ settings.color_bg_header }};
+    color:{{ settings.color_head_general }};
+}
+
+#header #tagline .title {
+    color:{{ settings.color_body_shoptitle }};
+    font:{{ settings.font_logo_style }} {{ settings.font_logo_size }}px {{ font_logo_type }}, sans-serif;
+}
+
+{% if settings.use_logo_image %}
+#header #logo {
+    display:block;
+    height:{{ settings.logo_height }}px;
+    background:url({{ 'logo.png' | asset_url }}) no-repeat
+    {% if settings.logo_margin_left == 'center' or settings.logo_margin_left == 'centre' %}
+    center
+    {% else %}
+    {{ settings.logo_margin_left }}px
+    {% endif %} 0;
+    margin-top:{{ settings.logo_margin_top }}px;
+}
+#header #tagline .title {
+    display:none;
+}
+{% endif %}
+
+#header #tagline .subtitle {
+    display:block;
+}
+
+#header,
+#main,
+#footer,
+#container.slim #main,
+#container.slim #header,
+#container.slim #footer {
+    background:none !important;
+}
+
+#container {
+    font-size:100%;
+}
+#container.slim {
+  background: none !important;
+}
+
+input[type=submit] {
+    border:0;
+    background:{{ settings.color_btn_bg }};
+    color: {{ settings.color_btn_text }};
+    padding:7px 15px;
+    cursor:pointer;
+    display:inline-block;
+    zoom:1;
+    *display:inline;
+    
+    -webkit-box-shadow: 0 0 2px 0 #000;
+    -moz-box-shadow: 0 0 2px 0 #000;
+    box-shadow: 0 0 2px 0 #000;
+
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    -webkit-appearance:none
+}
+input {
+    font:{{ settings.font_standard_style }} {{ settings.font_standard_size }}px {{ font_standard_type }}, sans-serif;
+}
+#buttons input {
+    font-weight:normal;
+    padding:7px 15px;
+    background-image: none;
+    background-color: #0099cc;
+    border: 0;
+    text-shadow: none;
+    -webkit-appearance:none;
+}
+
+#email label,
+.group h3,
+.pgroup h3,
+#cost,
+#order-num,
+#steps,
+#header #tagline .subtitle {
+    font: {{ settings.font_standard_style }} 24px {{ font_heading_type }}, sans-serif;
+    line-height:30px;
+    border-bottom:1px solid {{ settings.color_general_divider }};
+    margin-bottom: 20px;
+    padding-top:20px;
+    padding-bottom:10px;
+    color:{{ settings.color_body_standard }};
+}
+
+#cost, #order-num {
+    font-size:220%;
+    border:none;
+    text-shadow:none;
+    padding-top:35px;
+    padding-bottom:0px;
+
+}
+
+#steps {
+}
+
+#thumbs div,
+#products {
+    border-color:{{ settings.color_general_divider }};
+    font-size: 120%;
+}
+
+#overview {
+    background:none;
+    border:none;
+}
+
+#buttons {
+    background:#f7f7f7;
+    border:1px solid #ccc;
+  text-align: right;
+}
+
+h4.active-customer,
+#header #tagline .subtitle,
+#overview h2,
+#footer,
+#thumbs h3,
+#thumbs span,
+#overview .hint,
+#thumbs h3 span,
+#cost,
+#steps {
+    color:{{ settings.color_body_standard }};
+}
+
+#wallet {
+    background-image:none !important;
+    background-color:transparent !important;
+}
+
+label, .group h3 {
+    font-weight:300 !important;
+    background: none !important;
+    border: 0 !important;
+    color:{{ settings.color_body_standard }};
+}
+
+.form td {
+    vertical-align:middle;
+}
+
+.form td input {
+    padding:4px;
+}
+
+/* Enable the following styles if the sides of your logo
+ * get cut off in the checkout due to it being very wide
+ */
+
+/*
+#container.slim,
+#container.slim #header,
+#container.slim #main,
+#container.slim #footer{
+    width:776px;
+}
+*/
+
+/* PurpleTag updates / Lisa */
+li#billing_address_province_li, li#shipping_address_province_li {
+    display: none;
+}
+div#header #tagline {
+    display: none;
+}
+/* Required Phone Number */
+label[for=billing_address_phone]:after, 
+label[for=shipping_address_phone]:after { 
+  content: '*'; 
+  padding-left: 3px; 
+  display: inline; 
+  color: red; 
+}
+
+/* Hide the delivery method selection, as we only offer one delivery method /Fred */
+div#payment p.sst {
+  display: none;
+}
+
+/* add a little space to the button, so it does not look cramped with the text /Fred */
+input#complete-purchase, input#commit-button {
+  margin-right: 0.5em;
+  font-size: 24px;
+  box-shadow: 0 0 2px 1px #ddd;
+}
+input#complete-purchase:hover, input#commit-button:hover {
+  box-shadow: 0 0 2px 1px #000;
+}
+
+/* use a little larger text in the input, to make it easer to use /Fred */
+form input, form select {
+  font-size: 100%;
+}
+
+/* use green instead of red, feels more friendly /Fred */
+div#shipping-same {
+  background-color: #EEFFEB;
+  border-color: #B9E7BD;
+  text-align: left;
+}
+
+div#shipping-same span {
+  opacity: 0.5;
+}
+
+span#steps {
+  display: none;
+}
+
+#email label, .group h3 {
+  padding-top: 0;
+  margin-bottom: 10px;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+#info-bar {
+  background-color: #eee;
+}
+
+#container {
+  background-position: 100% 10px !important;
+}
+
+/* Hide more information /Fred */
+#discounts h3 {
+  display: none;
+}
+#wallet {
+  display: none;
+}
+#products {
+  border-right: 0 !important;
+}
+#products h2 {
+  display: none;
+}
+#email label {
+  font-size: 18px;
+  margin-bottom: 5px;
+  line-height: normal;
+}
+#email p {
+  margin: 0 0 5px 0;
+}
+table#billing tbody tr:nth-child(3),
+table#shipping tbody tr:nth-child(3) {
+  display: none;
+}
+#footer.footer {
+  border-top: 1px solid #ddd;
+  padding-top: 5px;
+}
+div#buttons, table#buttons {
+  border: 0;
+  background: none;
+}
+#marketing-box h3 {
+  display: none;
+}
+#discounts div.group {
+  margin: 0;
+  background: none;
+  border: 0;
+  opacity: 0.7;
+  padding: 0;
+  text-align: right;
+}
+#payment div.group {
+  background: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+#payment div.group h3 {
+  margin: 0;
+  padding: 0;
+}
+#payment div.group p {
+  display: none;
+}
+#marketing-box {
+  background: none;
+  border: 0;
+  margin: 0;
+  padding: 0; 
+}
+small#cancel-purchase {
+  display: none;
+}
+
+
+@font-face {
+    font-family: "mobileicons";
+    src: url(data:application/font-woff;charset=utf-8;base64,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) format("woff"), 
+    url("{{ 'mobileicons.ttf' | asset_url }}") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+.sharing {
+  text-align: left;
+  font-family: mobileicons;
+  margin-top: 15px;
+}
+#content .sharing a.share {
+  display: inline-block;
+  width: 21%;
+  margin: 0;
+  color: white;
+  padding: 20px 0 5px 2px;
+  font-size: 24px;
+  text-align: left;
+  vertical-align: baseline;
+  border: 0;
+  text-decoration: none;
+}
+.sharing .share span {
+  display: none;
+}
+.share.facebook::before {
+  content: "\e012";
+}
+.share.facebook {
+  background-color: rgb(60, 88, 152);
+}
+.share.twitter::before {
+  content: "\e00f"; 
+}
+.share.twitter {
+  background-color: rgb(106, 173, 209);
+}
+.share.pin::before {
+  content: "\e010"; 
+}
+.share.pin {
+  background-color: #de2108;
+}
+.share.gplus::before {
+  content: "\e604"; 
+}
+.share.gplus {
+  background-color: rgb(205, 54, 39);
+}
+.share.whatsapp::before {
+  content: "\e014";
+}
+.share.whatsapp {
+  background-color: #58AD15;
+}
+#overview #thumbs {
+  display: none;
+}
+#overview h2 {
+  font-size: 50px;
+  margin-top: 1em;
+  text-align: center;
+}
+body .group,
+body #addresses,
+body #email {
+  border-radius: 0;
+  border: none;
+  border-top: 1px solid #e6e6e6;
+  background: none;
+}
+body #email {
+  border: 0;
+  margin-top: 25px;
+}
+body {
+  margin: 0;
+  padding: 0 10px;
+}
+body #container {
+  margin: 0 auto;
+}
+#email input {
+  margin: 5px 10px 25px 10px;
+}

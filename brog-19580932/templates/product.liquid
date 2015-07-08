@@ -1,0 +1,534 @@
+<meta itemprop="url" content="{{ shop.url }}{{ product.url }}" />
+<meta itemprop="image" content="{{ product.featured_image.src | product_img_url: 'grande' }}" />
+    
+<div id="crumbs" class="sixteen columns">
+    <a href="/" title="Home">Home</a>
+    &raquo;
+    {% if collection %}
+    {{ collection.title | link_to: collection.url }} &raquo;
+    {% endif %}
+    <a href="{{ product.url }}">{{ product.title }}</a>
+</div>
+
+<div id="productinfo" class="cf" data-featimgurl="{{ product.featured_image | product_img_url: 'small' }}" itemscope itemtype="http://schema.org/Product">
+    <div class="eight columns">
+        {% if product.images.size > 1 and settings.prod_det_gall_method != 'hide' %}
+        <div id="rg-gallery" class="rg-gallery">
+            <div class="rg-thumbs">
+                <!-- Elastislide Carousel Thumbnail Viewer -->
+                <div class="es-carousel-wrapper">
+                    <div class="es-carousel">
+                        <ul>
+                        {% for image in product.images %}<li><a href="#"><img title="{{ image.alt }}" src="{{ image | product_img_url: 'small' }}" data-large="{{ image | product_img_url: '1024x1024' }}" data-zoom="{{ image | product_img_url: '1024x1024' }}" alt="{{ image.alt }}" data-description="" /></a></li>{% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <!-- End Elastislide Carousel Thumbnail Viewer -->
+            </div><!-- rg-thumbs -->
+            
+            <noscript>
+                <div class="rg-image-wrapper x">
+                    <div class="rg-image"><img itemprop="image" src="{{ product.featured_image | product_img_url: '1024x1024' }}" /></div>
+                    <div class="rg-loading"></div>
+                    <div class="rg-caption-wrapper">
+                        <div class="rg-caption" style="display:none;">
+                            <p></p>
+                        </div>
+                    </div>
+              </div>
+            </noscript>
+        </div><!-- rg-gallery -->
+        <script id="img-wrapper-tmpl" type="text/x-jquery-tmpl">    
+            <div class="rg-image-wrapper">
+                {{if itemsCount > 1}}
+                    <div class="rg-image-nav">
+                        <a href="#" class="rg-image-nav-prev">Previous Image</a>
+                        <a href="#" class="rg-image-nav-next">Next Image</a>
+                    </div>
+                {{/if}}
+                <div class="rg-image"></div>
+                <div class="rg-loading"></div>
+                <div class="rg-caption-wrapper">
+                    <div class="rg-caption" style="display:none;">
+                        <p></p>
+                    </div>
+                </div>
+
+                {% unless product.available %}
+                <div class="salecontainer"><span class="sold">Sold out</span></div>
+                {% else %}
+                {% if product.tags contains 'new' and product.available and product.compare_at_price_max <= product.price%}
+                <div class="salecontainer"><span class="new">New</span></div>
+                {% elsif product.compare_at_price_max > product.price and product.available and settings.prod_show_sale and product.tags contains 'offer' %}
+                <div class="salecontainer"><span class="offer">{{ settings.text_offer }}</span></div>
+                {% elsif product.compare_at_price_max > product.price and product.available and settings.prod_show_sale %}
+                <div class="salecontainer"><span class="sale">{{ settings.text_sale }}</span></div>
+                {% elsif product.compare_at_price_max > product.price and product.available %}
+                <div class="salecontainer"><span class="offer">{{ settings.text_offer }}</span></div>
+                {% endif %}
+                {% endunless %}        
+
+            </div>
+        </script>
+        {% elsif product.images.size == 1 or settings.prod_det_gall_method == 'hide' %}
+        <div class="singleimage">
+            {% if settings.prod_det_gall_method == 'zoom' %}
+            <a href="{{ product.featured_image | product_img_url: '1024x1024' }}"><img src="{{ product.featured_image | product_img_url: '1024x1024' }}" alt="{{ product.featured_image.alt }}" /></a>
+            {% elsif settings.prod_det_gall_method == 'lightbox' %}
+            <a href="{{ product.featured_image | product_img_url: '1024x1024' }}"><img src="{{ product.featured_image | product_img_url: '1024x1024' }}" alt="{{ product.featured_image.alt }}" /></a>
+            {% else %}
+            <a href="{{ product.featured_image | product_img_url: '1024x1024' }}"><img src="{{ product.featured_image | product_img_url: '1024x1024' }}" alt="{{ product.featured_image.alt }}" /></a>
+            {% endif %}
+            {% if settings.prod_det_gall_method == 'zoom' %}
+            <script>
+                //Not when touch
+                if( !!!('ontouchstart' in window) ? 1 : 0 ) {
+                    $(function(){
+                        var opts = {};
+                        $.extend(opts, thumbZoomOptions);
+                        opts.blockClicks = true;
+                        $('#productinfo .singleimage a').jqzoom(opts);
+                        $('#productinfo .singleimage a').slimbox();
+                        $('#tab-3 a').slimbox();
+                      //alert();
+                    });
+                }
+            </script>
+            {% elsif settings.prod_det_gall_method == 'lightbox' %}
+            <script>
+                $(function(){
+                    $('#productinfo .singleimage a').slimbox();
+                  $('#tab-3 a').hide();
+                });
+            </script>
+            {% endif %}
+
+            {% unless product.available %}
+            <div class="salecontainer"><span class="sold">Sold out</span></div>
+            {% else %}
+            {% if product.tags contains 'new' and product.available and product.compare_at_price_max <= product.price%}
+            <div class="salecontainer"><span class="new">New</span></div>
+            {% else %}
+            {% if product.compare_at_price_max > product.price and product.available %}
+            <div class="salecontainer"><span class="sale">{{ settings.text_sale }}</span></div>
+            {% endif %}
+            {% endif %}
+            {% endunless %}        
+
+        </div>
+        {% endif %}
+        <!-- under gallery -->
+        {% if settings.show_social_product %}
+        <div class="social contentsection">
+            <span class="label">{{ settings.text_sharethis }}</span>
+            {% include 'social-sharing' %}
+        </div>
+        {% endif %}
+        
+    </div>
+    
+    <div id="detail" class="seven columns offset-by-one">
+        <h1 itemprop="name">{{ product.title }}</h1>
+        {% if settings.prod_show_vendor %}
+            <p>By <span itemprop="brand">{{ product.vendor | link_to_vendor }}</span></p>
+        {% endif %}
+        <div id="price-field" class="price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+          <span itemprop="price">&euro;{{ product.variants.first.price | money_without_currency }}</span>
+        </div>
+      <div id="incDelivery"><a href="/pages/delivery-return">(inc. free delivery &amp; return in Ireland)</a></div>
+            {% if product.compare_at_price_max > product.variants.first.price %}
+                <div class="was-price">was {{ product.compare_at_price_max | money }}</div>
+            {% endif %}
+        <div id="deliveryEstimate" class="instock" style="">In Stock</div>
+        <div id="deliveryEstimate2"></div>
+        {% if product.available %}
+        <form action="/cart/add" method="post" id="product-form">
+            <input type="hidden" id="nextDay" name="properties[nextDay]" value="false" />
+            <div class="options">
+                <!-- <label for="quantity">Quantity:</label> 
+                <a href="javascript:modifyQuantity('#quantity', -1)" class="minibutton">-</a> -->
+                <input class="short" type="hidden" id="quantity" name="quantity" value="1" onfocus="this.select();" />
+                <!-- <a href="javascript:modifyQuantity('#quantity', 1)" class="minibutton">+</a> -->
+             {% if product.variants.size == 1 %}
+                <input type="hidden" name="id" value="{{ product.variants.first.id }}" />
+                {% if settings.prod_show_opts_single %}<p>{{ product.options.first }}: {{ product.variants.first.title }}</p>{% endif %}
+            {% else %}
+                <div class="selectors">
+                  <!-- bug fix for old products that have the "Title" set instead of "Size" /Fred 2013-7-25 -->
+                  <label for="product-select">{% if product.options.first == 'Title' %}Size{% else %}{{ product.options.first }}{% endif %}:</label>
+                    <select id="product-select" name="id" class="noreplace">
+                        {% for variant in product.variants %}
+                            <option value="{{ variant.id }}">{{ variant.title }} - {{ variant.price | money }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <script type="text/javascript">
+                    var selectCallback = function(variant, selector) {
+                        if (variant && variant.available == true) {
+                            // selected a valid variant
+                            $('#BIS_trigger').removeClass('enabled');
+                            $('#productinfo #detail #purchase').removeClass('disabled').removeAttr('disabled'); // remove unavailable class from add-to-cart button, and re-enable button
+                            
+                            var newHtml = Shopify.formatMoney(variant.price, "{{shop.money}}");
+                          /* don't update the price field. We always use the same price on variants, and we
+                             always use the same compare-at-price /Fred 2014-01-07 
+                            if(variant.compare_at_price > variant.price) { 
+                                newHtml += '<div class="was-price">was ' + Shopify.formatMoney(product.compare_at_price_max, "{{shop.money}}") + '</div>';
+                            }
+                            */
+                            $('#price-field').html(newHtml);  // update price field
+                          
+                          if(chosenVariation == 1) {
+                              $('#deliveryEstimate2').html("(delivery 3 working days)");
+                          } else if(chosenVariation == 2) {
+                            if(variant.inventory_quantity > {{ settings.inventory_limit_next_day }} ) {
+                              $('#deliveryEstimate').html("Next Day Delivery");
+                              $('#deliveryEstimate2').html("(weekdays, order before 2pm)");
+                              $('#nextDay').val('true');
+                            } else {
+                              $('#deliveryEstimate').html("In Stock");
+                              $('#deliveryEstimate2').html("(delivery 3 working days)");
+                              $('#nextDay').val('false');
+                            }
+
+                            $('#deliveryEstimate').css('background-color', '#c4e2c5');
+                            $('#deliveryEstimate').removeClass('blink1');
+
+                            setTimeout(function() {   //add class again, to create 'flash' effect
+                                $('#deliveryEstimate').addClass('blink1');
+                            }, 10);
+                          }
+                        } else {
+                            // variant doesn't exist
+                            $('#productinfo #detail #purchase').addClass('disabled').attr('disabled', 'disabled'); // set add-to-cart button to unavailable class and disable button
+                            $('#BIS_trigger').addClass('enabled');
+                            var message = variant ? "Sold Out" : "Unavailable";
+                            $('#price-field').text(message); // update price-field message
+                        }
+                    };
+                    
+                    //Set up product inputs
+                    $(function() {
+                      var optionSelectors = new Shopify.OptionSelectors("product-select", { product: {{ product | json | replace: '"KIDS"', '"Size"' | replace: '"English Chs"', '"Size"' | replace: '"Clothes"', '"Size"' | replace: '"Continental LADIES"', '"Size"' | replace: '"Continental KIDS"', '"Size"' | replace: '"SIZES"', '"Size"' | replace: '"Colours"', '"Colour"' | replace: '"English MENS"', '"Size"' }}, onVariantSelected: selectCallback });
+                        {% if settings.prod_enable_linked_options and product.options.size > 1 %}
+                        Shopify.linkOptionSelectors({{ product | json | replace: '"KIDS"', '"Size"' | replace: '"English Chs"', '"Size"' | replace: '"Clothes"', '"Size"' | replace: '"Continental LADIES"', '"Size"' | replace: '"Continental KIDS"', '"Size"' | replace: '"SIZES"', '"Size"'  | replace: '"Colours"', '"Colour"' | replace: '"English MENS"', '"Size"'}});
+                        {% endif %}
+                        {% assign found_one_in_stock = false %}
+                        {% for variant in product.variants %}
+                            {% if variant.available and found_one_in_stock == false %}
+                                {% assign found_one_in_stock = true %}
+                                {% for option in product.options %}
+                                    jQuery('.single-option-selector:eq(' + {{ forloop.index0 }} + ')').val({{ variant.options[forloop.index0] | json }}).trigger('change');
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                      // NextDayDelivery Experiment
+                        {% assign found_one_next_day = false %}
+                      {% assign inventoryCompare = settings.inventory_limit_next_day | plus: 0 %}
+                        {% for variant in product.variants %}
+                      <!-- v: {{ variant.name }} -->
+                            {% if variant.available and variant.inventory_quantity >= inventoryCompare and found_one_next_day == false %}
+                                {% assign found_one_next_day = true %}
+                                if(chosenVariation == 2) {
+		                        optionSelectors.selectVariant({{ variant.id }});
+                                }
+                      {% else %}
+                      <!-- a: {{variant.available}}, i: {{variant.inventory_quantity}}-{{ settings.inventory_limit_next_day }}, f: {{found_one_next_day}}--> 
+                            {% endif %}
+                        {% endfor %}
+                      // End Experiment
+                      
+                        //Hide original option label if we now have multiple options
+                        if($('.selector-wrapper .single-option-selector').length != 1) {
+                            $('#product-select').siblings('label[for="product-select"]').hide();
+                        }
+                        
+                        //Style any added select dropdowns
+                        $.selectReplace();
+                    });
+                </script>
+              <script>
+                var perfectFitPopupCount = 0;
+              </script>
+              <div id="sizeAdvice"><!-- <strong>FIT:</strong> true to size --><a href="/pages/delivery-return" onclick="$('#perfectFitPopup').slideToggle(200); if(perfectFitPopupCount++ == 0) { ga('send', 'event', 'Open Info' , 'Perfect-Fit Guarantee', '{{ product.title | escape }}'); }; return false;">Perfect-Fit Guarantee</a></div>
+              
+              <div id="perfectFitPopup" style="display: none">
+                <h4>Free Delivery &amp; Returns</h4>
+                <p>All our deliveries &amp; returns are free.</p>
+                <h4>Try at Home</h4>
+                <p>If you want to return or change the shoes, just drop them back the nearest Post Office for free.</p>
+                <h4>30 Days to Think</h4>
+                <p>There is no rush. You have 30 days to make up your mind.</p>
+              </div>
+
+            {% endif %}
+            
+            {% comment %} If you are using Shopify's Line Item Properties, add them here! {% endcomment %}
+            
+            </div>
+            
+            <div class="addbuttoncont">
+                <input type="submit" name ="add" id="purchase" class="button large plus" value="{{ settings.text_addtocart }}" />
+              <input type="submit" name ="soldout" id="BIS_trigger" class="button large plus" value="Tell me when back in stock" />
+            </div>
+            
+            <script>
+                Shopify.money_format = '{{shop.money_format | replace: "'", '"'}}';
+                
+                {% unless settings.prod_disable_ajax %}
+                //Override for default Shopify function
+                Shopify.onItemAdded = function(line_item) {
+                    //Make buttons usable again
+                    $('form input[type="submit"]').attr('disabled', false).removeClass('disabled');
+                    //Adding to cart successful, update cart
+                    Shopify.getCart();
+                    //Show 'item added'
+                    $('#purchase').siblings('.added').remove();
+                    $('<div>').addClass('added').html('<span class="yay">{{ settings.text_ty }}</span><a class="basket" href="/cart">{{ settings.text_cart }} &rarr;</a>')
+                        .insertBefore($('#purchase')).fadeIn(200).delay(5000).fadeOut(500, function(){ 
+                            $(this).remove();
+                        });
+                    return false;
+                }
+                
+                //Override for default Shopify function
+                Shopify.onError = function(XMLHttpRequest, textStatus) {
+                    //Make buttons usable again
+                    $('form input[type="submit"]').attr('disabled', false).removeClass('disabled');
+                    //Display error message
+                    var errmsg;
+                    var data = eval('(' + XMLHttpRequest.responseText + ')');
+                    if (!!data.message) {
+                        errmsg = data.message + '<br />' + data.description;
+                    } else {
+                        errmsg = Shopify.fullMessagesFromErrors(data).join('; ');
+                    }
+                    $('#purchase').siblings('.added').remove();
+                    $('<div>').addClass('added').addClass('error').html('<span>'+errmsg+'</span>')
+                        .insertBefore($('#purchase')).fadeIn(200).delay(5000).fadeOut(500, function(){ 
+                            $(this).remove();
+                        });
+                };
+                
+                //Override for default Shopify function
+                Shopify.onCartUpdate = function(cart) {
+                    //Update elements on screen that show cart info
+                    $('#headercartvals').html('(' + cart.item_count + ') ' + Shopify.formatMoney(cart.total_price));
+                }
+                
+                //Define the function that adds to the cart
+                function addToCart(e) {
+                    if (typeof e !== 'undefined') e.preventDefault();
+                    Shopify.addItemFromForm($(this).closest('form').attr('id'));
+                }
+                
+                $(function(){
+                    //Action for clicking 'buy'
+                    $('#purchase').bind('click', addToCart);
+                });
+                {% endunless %}
+            </script>
+        </form>
+        {% else %}
+        <h3>{{ settings.text_soldout }}</h3>
+        {% endif %}
+<!-- Change 1 Add Tabs-->    
+          {% assign vendorname = product.vendor | replace: " ", "-" | downcase %}
+            {% assign vendorinfo = "" | append : vendorname | append : "-productpage"%}
+    {% assign coll = collections[vendorinfo]%}
+        <div class="tabs">
+          {% unless coll.description == blank and coll.image.src == blank %}
+            <ul class="tabnav tabs">
+            <li>
+              {%unless product.description == blank %}<a href="#tab-1" onclick="ga('send', 'event', 'Open Info' , 'Product - Description Tab', '{{ product.title | escape }}')">DESCRIPTION</a></li>{%endunless%}
+              {%unless coll.description == blank %}<li><a href="#tab-4" onclick="ga('send', 'event', 'Open Info' , 'Product - Brand Tab', '{{ product.title | escape }}')">BRAND</a></li>{%endunless%}
+              {%unless coll.image.src == blank %}<li><a href="#tab-3" onclick="ga('send', 'event', 'Open Info' , 'Product - Size Chart Tab', '{{ product.title | escape }}')">SIZE CHART</a></li>{%endunless%}
+            </ul>
+          {% endunless %}
+          {% unless product.description == blank %}
+  <div id="tab-1">
+   <div class="description contentsection" itemprop="description">{% include 'process-html' with product.description %}</div>
+  </div>
+          {% endunless %}
+  {%unless coll.description == blank%}
+          <div id="tab-4">
+    {{ coll.description }}
+    </div>
+  {%endunless%}
+
+          {%unless coll.image.src == blank %}<div id="tab-3">
+    <a class="lbimg" rel="lightbox" href="{{ coll.image.src | collection_img_url: 'master' }}" style="display:block"><img src="{{ coll.image.src | collection_img_url: 'medium' }}"></a>
+      </div>
+  {%endunless%}
+
+<!-- -->
+        </div>
+      <h3>Free Delivery &amp; Return</h3>
+        <ul class="freeDelivery">
+          <li><strong>Free courier delivery</strong> - we offer free delivery for all purchases within Ireland</li>
+          <li><strong>Where it suits you</strong> - we deliver to your house or your office, wherever is easiest for you</li>
+          <li><strong>Free returns</strong> - we offer FREE returns on all purchases in Ireland</li>
+          <li><strong>30 days return policy</strong> - there is no rush, you have 30 days to decide</li>
+        </ul>
+
+        {% if settings.prod_show_type %}<div class="contentsection">See more: {{ product.type | link_to_type }}</div>{% endif %}
+        
+        {% comment %} List out product tags - don't show special 'related' tags {% endcomment %}
+        {% assign tagsHTML = '' %}
+        {% assign mostRecentTagHTML = '' %}
+        {% for tag in product.tags %}
+            {% assign firstbit = tag | split: '-' | first %}
+            {% unless firstbit == 'related' %}
+                {% capture mostRecentTagHTML %}<a href="/collections/all/{{ tag | handleize }}">{{ tag }},</a> {% endcapture %}
+                {% capture tagsHTML %}{{ tagsHTML }}{{ mostRecentTagHTML }}{% endcapture %}
+            {% endunless %}
+        {% endfor %}
+        
+        {% if tagsHTML contains 'a' %}
+        {% assign mostRecentTagWithoutCommaHTML = mostRecentTagHTML | replace: ',','' %}
+        <div class="tags contentsection">
+            Tags: {{ tagsHTML | replace: mostRecentTagHTML, mostRecentTagWithoutCommaHTML }}
+        </div>
+        {% endif %}
+        
+        {% if collection %}
+            <div class="paging simpletext">
+            {% if collection.previous_product %}
+                <span class="prevwrap"><a class="prev" href="{{ collection.previous_product }}">&#8249;</a> <a class="text" href="{{ collection.previous_product }}">Previous</a></span>
+            {% endif %}
+            {% if collection.next_product %}
+                <span class="nextwrap"><a class="text" href="{{ collection.next_product }}">Next</a> <a class="next" href="{{ collection.next_product }}">&#8250;</a></span>
+            {% endif %}
+            </div>
+        {% endif %}
+    </div><!-- #detail -->
+</div>
+
+{% include 'product-page-related' with product %}
+
+{{ "gallery.js" | asset_url | script_tag }}
+{{ "jquery.easing.1.3.js" | asset_url | script_tag }}
+{{ "jquery.elastislide.js" | asset_url | script_tag }}
+{{ "jquery.tmpl.min.js" | asset_url | script_tag }}
+
+{% if settings.prod_enable_linked_options %}
+<script>
+// (c) Copyright 2011 Caroline Schnapp. All Rights Reserved. Contact: mllegeorgesand@gmail.com
+// See http://wiki.shopify.com/Linked_Options
+var Shopify = Shopify || {};
+
+Shopify.optionsMap = {};
+
+Shopify.updateOptionsInSelector = function(selectorIndex) {
+    
+  switch (selectorIndex) {
+    case 0:
+      var key = 'root';
+      var selector = jQuery('.single-option-selector:eq(0)');
+      break;
+    case 1:
+      var key = jQuery('.single-option-selector:eq(0)').val();
+      var selector = jQuery('.single-option-selector:eq(1)');
+      break;
+    case 2:
+      var key = jQuery('.single-option-selector:eq(0)').val();
+      key += ' / ' + jQuery('.single-option-selector:eq(1)').val();
+      var selector = jQuery('.single-option-selector:eq(2)');
+  }
+  
+  var initialValue = selector.val();
+  selector.empty();
+  var availableOptions = Shopify.optionsMap[key];
+  if(typeof(availableOptions) != 'undefined') {
+    for (var i=0; i<availableOptions.length; i++) {
+    var option = availableOptions[i];
+    var newOption = jQuery('<option></option>').val(option).html(option);
+    selector.append(newOption);
+    }
+    if (jQuery.inArray(initialValue, availableOptions) !== -1) {
+    selector.val(initialValue);
+    }
+    selector.trigger('change');
+  }
+};
+
+Shopify.linkOptionSelectors = function(product) {
+  // Building our mapping object.
+  for (var i=0; i<product.variants.length; i++) {
+    var variant = product.variants[i];
+    if (variant.available ) {
+      // Gathering values for the 1st drop-down.
+      Shopify.optionsMap['root'] = Shopify.optionsMap['root'] || [];
+      Shopify.optionsMap['root'].push(variant.option1);
+      Shopify.optionsMap['root'] = Shopify.uniq(Shopify.optionsMap['root']);
+      // Gathering values for the 2nd drop-down.
+      if (product.options.length > 1) {
+        var key = variant.option1;
+        Shopify.optionsMap[key] = Shopify.optionsMap[key] || [];
+        Shopify.optionsMap[key].push(variant.option2);
+        Shopify.optionsMap[key] = Shopify.uniq(Shopify.optionsMap[key]);
+      }
+      // Gathering values for the 3rd drop-down.
+      if (product.options.length === 3) {
+        var key = variant.option1 + ' / ' + variant.option2;
+        Shopify.optionsMap[key] = Shopify.optionsMap[key] || [];
+        Shopify.optionsMap[key].push(variant.option3);
+        Shopify.optionsMap[key] = Shopify.uniq(Shopify.optionsMap[key]);
+      }
+    }
+  }
+  // Update options right away.
+  Shopify.updateOptionsInSelector(0);
+  if (product.options.length > 1) Shopify.updateOptionsInSelector(1);
+  if (product.options.length === 3) Shopify.updateOptionsInSelector(2);
+  // When there is an update in the first dropdown.
+  jQuery(".single-option-selector:eq(0)").change(function() {
+    Shopify.updateOptionsInSelector(1);
+    if (product.options.length === 3) Shopify.updateOptionsInSelector(2);
+    return true;
+  });
+  // When there is an update in the second dropdown.
+  jQuery(".single-option-selector:eq(1)").change(function() {
+    if (product.options.length === 3) Shopify.updateOptionsInSelector(2);
+    return true;
+  });
+  
+};
+
+jQuery(document).ready(function() {
+    // tabs
+    jQuery('ul.tabnav').each(function(){
+    var active, content, links = jQuery(this).find('a');
+      console.log(links);
+    active = links.first().addClass('active');
+    content = jQuery(active.attr('href'));
+    links.not(':first').each(function () {
+        jQuery(jQuery(this).attr('href')).hide();
+    });
+      console.log(jQuery(this));
+
+      /*links.each(function(){
+        jQuery(jQuery(this).attr('href')).hide();
+      });*/
+    jQuery(this).on('click', 'a', function(e){
+        // Make the old tab inactive.
+        active.removeClass('active');
+        content.hide();
+
+        // Update the variables with the new link and content
+        active = jQuery(this);
+        content = jQuery(jQuery(this).attr('href'));
+
+        // Make the tab active.
+        active.addClass('active');
+        content.show();
+
+        // Prevent the anchor's default click action
+        return false;
+    });
+});
+    jQuery(".lbimg").show();
+});
+</script>
+{% endif %}

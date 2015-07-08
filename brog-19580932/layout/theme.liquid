@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+<head>
+<link rel="shortcut icon" href="{{ 'purpletag-favicon.ico' | asset_url }}" type="image/x-icon" />
+  
+<!-- link PurpleTag to Fred's Facebook account, to track usage of Like buttons -->
+<meta property="fb:admins" content="738380468" />
+
+<meta name="p:domain_verify" content="f02482d4f021a5453befbf0a40627f4b"/>
+  
+<!-- Clean v2.0.4 -->
+
+<!-- theme meta -->
+{% include 'theme-meta' %}
+<!-- end theme meta -->  
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+
+<!-- content for header -->
+{{ content_for_header }}
+<!-- end content for header -->
+
+{{ 'style.css' | asset_url | stylesheet_tag }}
+{{ 'skeleton.css' | asset_url | stylesheet_tag }}
+
+{% comment %} Google Web Font imports {% endcomment %}
+{% assign font_heading_type_split = settings.font_heading_type | split: '|' %}
+{% assign font_logo_type_split = settings.font_logo_type | split: '|' %}
+{% assign font_nav_type_split = settings.font_nav_type | split: '|' %}
+{% assign font_standard_type_split = settings.font_standard_type | split: '|' %}
+
+{% if settings.font_heading_type == 'GWF|CUSTOM' %}
+    <link href="http://fonts.googleapis.com/css?family={{ settings.font_heading_type_custom }}:300,400" rel="stylesheet" type="text/css"/>
+{% elsif font_heading_type_split.first == 'GWF' %}
+    <link href="http://fonts.googleapis.com/css?family={{ font_heading_type_split.last }}" rel="stylesheet" type="text/css"/>
+{% endif %}
+{% if settings.font_logo_type == 'GWF|CUSTOM' %}
+    <link href="http://fonts.googleapis.com/css?family={{ settings.font_logo_type_custom }}:300,400" rel="stylesheet" type="text/css"/>
+{% elsif font_logo_type_split.first == 'GWF' %}
+    <link href="http://fonts.googleapis.com/css?family={{ font_logo_type_split.last }}" rel="stylesheet" type="text/css"/>
+{% endif %}
+{% if settings.font_nav_type == 'GWF|CUSTOM' %}
+    <link href="http://fonts.googleapis.com/css?family={{ settings.font_nav_type_custom }}:300,400" rel="stylesheet" type="text/css"/>
+{% elsif font_nav_type_split.first == 'GWF' %}
+    <link href="http://fonts.googleapis.com/css?family={{ font_nav_type_split.last }}" rel="stylesheet" type="text/css"/>
+{% endif %}
+{% if settings.font_standard_type == 'GWF|CUSTOM' %}
+    <link href="http://fonts.googleapis.com/css?family={{ settings.font_standard_type_custom }}:300,400" rel="stylesheet" type="text/css"/>
+{% elsif font_standard_type_split.first == 'GWF' %}
+    <link href="http://fonts.googleapis.com/css?family={{ font_standard_type_split.last }}" rel="stylesheet" type="text/css"/>
+{% endif %}
+
+
+{{ 'api.jquery.js' | shopify_asset_url | script_tag }}
+{{ 'option_selection.js' | shopify_asset_url | script_tag }}
+
+<!--[if lte IE 7]>
+    {{ 'json2.js' | shopify_asset_url | script_tag }}
+<![endif]-->
+{% if template contains 'customers' %}
+    {{ "shopify_common.js" | shopify_asset_url | script_tag }}
+    {{ "customer_area.js"  | shopify_asset_url | script_tag }}
+{% endif %}
+
+{% comment %} Required before custom JS {% endcomment %}
+<script>
+var underIE9 = false;
+
+//Indicate to do image fade-in
+$('html').addClass('doimgfade');
+    
+//Global colours
+var color_body_bg = '{{ settings.color_bg_main }}';
+var color_divider = '{{ settings.color_general_divider }}';
+
+//For Ajax
+Shopify.money_format = '{{shop.money_format | replace: "'", '"'}}';
+
+//Acquire loading graphic asap
+var loadingGraphic = new Image();
+loadingGraphic.src = '{{ settings.loading_graphic | asset_url }}';
+{% if template == 'collection' %}
+{% comment%} Remove one for the products per row, as the first column is used by the Refined Search {% endcomment %}
+var productsPerRow = {{ settings.products_per_row_coll | minus: 1}};
+{% elsif template == 'search' %}
+var productsPerRow = {{ settings.products_per_row_coll | minus: 1}};
+{% elsif template == 'list-collections' %}
+    var productsPerRow = {{ settings.collrow_numperrow }};
+{% elsif template == 'product' %}
+    var productsPerRow = 4;
+{% else %}
+    var productsPerRow = {{ settings.products_per_row_home }};
+{% endif %}
+var vertSnapWidth = 768;//When window is under this width, everything is vertically aligned
+
+var thumbZoomOptions = {  
+    zoomType: 'innerzoom',  
+    lens:true,
+{% if settings.prod_preload_thumb_zoom %}
+    preloadImages: !!!('ontouchstart' in window) ? 1 : 0, //Only repload if not touch
+{% else %}
+    preloadImages: false,
+{% endif %}
+    alwaysOn:false,
+    title:false,
+    showEffect:'fadein',
+    hideEffect:'fadeout',
+    preloadText:'',
+    blockClicks: false
+};
+</script>
+
+<!--[if lte IE 9]>
+<script>
+underIE9 = true;
+</script>
+<![endif]-->
+
+<!--[if lte IE 9]>
+<script>
+    document.createElement('header');
+	document.createElement('nav');
+	document.createElement('section');
+	document.createElement('article');
+	document.createElement('figure');
+	document.createElement('aside');
+    document.createElement('footer');
+    document.createElement('cite');
+    document.createElement('canvas');
+</script>
+<![endif]-->
+
+{{ "slimbox2.js" | asset_url | script_tag }}
+{{ "jquery.flexslider-min.js" | asset_url | script_tag }}
+{{ "jquery.jqzoom-core-pack.js" | asset_url | script_tag }}
+{% if template contains 'blog' and settings.blog_display != 'onecolumn_side' %}
+    {{ "jquery.masonry.min.js" | asset_url | script_tag }}
+{% endif %}
+{% if template contains 'collection' and settings.use_inf_scroll == true %}
+    {{ "jquery.infinitescroll.min.js" | asset_url | script_tag }}
+{% endif %}
+{{ "blackandwhite.js" | asset_url | script_tag }}
+
+<script>
+$(function(){
+    $(window).resize(function() {
+        //Do things when theme snaps - and on DOM ready
+        var $mainCont = $('#maincontent.container');
+        var contWidth = $mainCont.width();
+        if(typeof($mainCont.data('prevwidth')) == 'undefined'
+                || $mainCont.data('prevwidth') != contWidth) {
+            //When CSS framework 'snaps'
+            
+            var productsPerRowRightNow = $(window).width() >= vertSnapWidth ? productsPerRow : 1;
+            var collsPerRowRightNow = $(window).width() >= vertSnapWidth ? {{ settings.collrow_numperrow }} : 1;
+if($(window).width() > 767) {
+            // disabled height normalisation for small screens, as it slows down the page rendering a lot
+            // on mobile devices. 28/9/2014 Fred
+            $('.productlist').normaliseHeights({
+                numPerRow:productsPerRowRightNow,
+                itemClass:'.product',
+                textRegionClasses:'.imgcont, .title, .desc, .price'
+            });
+            $('.widgets:not(.collection-row)').normaliseHeights({
+                numPerRow:productsPerRowRightNow,
+                itemClass:'.widget',
+                textRegionClasses:'h6, .title, .align',
+                affectOnlyDirectlyChildren: true
+            });
+            $('.widgets.collection-row').normaliseHeights({
+                numPerRow:collsPerRowRightNow,
+                itemClass:'.widget',
+                textRegionClasses:'.title, .align',
+                affectOnlyDirectlyChildren: true
+            });          
+            $('#mainslider').each(function(){
+                //Images?
+                var $img = $(this).find('img:first');
+                if($img.length > 0) {
+                    $(this).find('.slides li').height($img[0].naturalHeight * $(this).width() / $img[0].naturalWidth);
+                    $(this).find('.slides').css('height', '');
+                }
+            });
+            //Product pile
+            $('.productpilewidget ul').normaliseHeights({
+                numPerRow:3,
+                itemClass:'li',
+                textRegionClasses:'a'
+            });
+            //Product thumb zoom
+            $('.zoomPad').each(function(){
+                var $img = $(this).children('img');
+                var w = $img.width();
+                var h = $img.height();
+                $(this).find('.zoomPup, .zoomWindow .zoomWrapper').width(w).height(h);
+            });
+}
+            {% if template contains 'blog' and settings.blog_display != 'onecolumn_side' %}
+            //Masonry is used to tile blog articles
+            $('.masonry').masonry({
+                itemSelector : 'article',
+                columnWidth: function( containerWidth ) {
+                    {% if settings.blog_display == 'tiled_3' %}
+                        return containerWidth / 3;
+                    {% else %}
+                        return containerWidth / 2;
+                    {% endif %}
+                }
+            });
+            {% endif %}
+            
+            {% if settings.prod_thumb_hover_method == 'zoom' %}
+            //Rebuild product thumb zoom *if it already exists*
+            $('.productlist .product .delayedzoom').each(function(){
+                if(typeof($(this).data('jqzoom')) != 'undefined') {
+                    //Rebuild zoom
+                    $(this).find('.zoomPad > img').unwrap();
+                    $(this).data('jqzoom', null).find('.zoomPup, .zoomWindow, .zoomPreload').remove();
+                    $(this).jqzoom(thumbZoomOptions);
+                }
+            });
+            {% endif %}
+        }
+        $mainCont.data('prevwidth', contWidth);
+    }).trigger('resize');
+    
+    //Trigger again once any fonts are loaded - force resize event
+    $(window).load(function(){
+        $('#maincontent.container').data('prevwidth', null);
+        $(window).trigger('resize');
+    });
+    
+    {% if template contains 'blog' and settings.blog_display != 'onecolumn_side' %}
+    //Fade in images, and resize masonry
+    $('.masonry img').css('visibility', 'hidden');
+    $('.masonry').imagesLoaded(function(){
+        $('.masonry img').hide().css('visibility','visible').fadeIn(200);
+        $('.masonry').masonry({
+            itemSelector : 'article',
+            columnWidth: function( containerWidth ) {
+                {% if settings.blog_display == 'tiled_3' %}
+                    return containerWidth / 3;
+                {% else %}
+                    return containerWidth / 2;
+                {% endif %}
+            }
+        });
+    });
+    {% endif %}
+});
+</script>
+
+{% comment %} CSS that needs snippets {% endcomment %}
+<style type="text/css">
+{% assign hex2rgb_hex = settings.color_highlight_hover %}
+{% include 'hex2rgb' %}
+a.highlight:hover,
+input:focus, textarea:focus {
+    -webkit-box-shadow:inset 0px 0px 60px rgba({{ hex2rgb_r }},{{ hex2rgb_g }},{{ hex2rgb_b }}, 0.3);
+    -moz-box-shadow:inset 0px 0px 60px rgba({{ hex2rgb_r }},{{ hex2rgb_g }},{{ hex2rgb_b }}, 0.3);
+    box-shadow:inset 0px 0px 60px rgba({{ hex2rgb_r }},{{ hex2rgb_g }},{{ hex2rgb_b }}, 0.3);
+}
+
+{% assign hex2rgb_hex = settings.color_general_divider %}
+{% include 'hex2rgb' %}
+#util-bar #searchcont.slideout input.search,
+#pagefooter .registercont .registerform input[type=email] {
+    border-bottom:1px solid rgba({{ hex2rgb_r }},{{ hex2rgb_g }},{{ hex2rgb_b }}, 0.5);
+}
+
+{% assign hex2rgb_hex = settings.color_slider_mask %}
+{% include 'hex2rgb' %}
+#mainslider .overlay {
+    background:{{ settings.color_slider_mask }};
+    background:rgba({{ hex2rgb_r }},{{ hex2rgb_g }},{{ hex2rgb_b }}, 0.5);
+}
+</style>
+
+<!--[if IE]>
+<style type="text/css">
+#mainslider .lowerdesc {
+    background:transparent;
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99{{ settings.color_slider_mask | replace:'#','' }},endColorstr=#99{{ settings.color_slider_mask | replace:'#','' }});
+    -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99{{ settings.color_slider_mask | replace:'#','' }},endColorstr=#99{{ settings.color_slider_mask | replace:'#','' }});
+    zoom: 1;
+} 
+</style>
+<![endif]-->
+
+<script>$(function(){ $('a[rel="lightbox"]').slimbox(); });</script>
+<script>
+  //	var fixnav = 40;
+	var fixnav = 82;
+        function resetnav() {
+            var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            if (scrollTop > fixnav && pageheader.className === "container head-reg") {
+                document.getElementById("pageheader").className = "container head-fix";
+            }
+            else if (scrollTop < fixnav && pageheader.className === "container head-fix") {
+                document.getElementById("pageheader").className = "container head-reg";
+            }
+        }
+  /* disabled the scrolling header, based on experiment 17 Apr 2014 /Fred 
+        $(document).ready(function () {
+            if (!window.addEventListener) {
+                window.attachEvent("scroll", resetnav);
+            }
+            else {
+                window.addEventListener("scroll", resetnav, false);
+            }
+	});  
+    */
+</script>
+</head>
+
+  <body class="{% if customer %}customer-logged-in {% endif %}template-{{ template | split: '.' | first }} {% if template contains 'page.' %} page-{{page.handle}}{% endif %}">
+
+    {% include 'theme-header' %}
+    	<div id="maincontent" class="container">
+        
+            {% if template == 'list-collections' %}
+                {% include 'collection-listing' %}
+            {% else %}
+                {{ content_for_layout }}
+            {% endif %}
+            {% if social_is_on_the_page and template != 'product' %}<div class="socialspacer"></div>{% endif %}
+      <div id="recentproductswrapper">
+      </div>
+          
+<div class="as-seen-on"> 
+  <ul>
+    <li><a onclick="trackOutboundLink(this, 'As seen on - XPOSE'); return false;" href="http://purpletag.ie/pages/purpletag-on-xpose-autostart" class="xpose"><img src="{{ 'xpose-greyed.png' | asset_url }}" alt="XPOS&Eacute; logo"/></a></li>
+    <li><a onclick="trackOutboundLink(this, 'As seen on - RTE'); return false;" href="http://www.rte.ie/lifestyle/fashion/news/2014/0508/616080-new-irish-shoe-store-purpletag-ie-launches/ " class="rte"><img src="{{ 'rte-greyed.png' | asset_url }}" alt="RTE logo"/></a></li>
+    <li><a onclick="trackOutboundLink(this, 'As seen on - IMAGE'); return false;" href="http://image.ie/Events/The-Diary/Purple-Tag/" class="image"><img src="{{ 'image-greyed.png' | asset_url }}" alt="IMAGE logo"/></a></li>
+    <li><a onclick="trackOutboundLink(this, 'As seen on - Beaut.ie'); return false;" href="http://beaut.ie/2014/purple-tag-irelands-new-online-shoe-store-offers-exclusive-10-discount-to-all-beaut-ie-readers/" class="beaut"><img src="{{ 'beaut-greyed.png' | asset_url }}" alt="Beaut.ie logo"/></a></li>
+  </ul>
+</div>
+
+    </div>
+    </div><!-- .bodywrap -->
+    {% include 'theme-footer' %}
+    <a id="scrolltotop" onclick="trackLink(this.href, 'Navigation', 'Scroll to Top', null); return false;" href="#util-bar">Scroll to top</a>
+
+<div id="google_remarketing">
+<!-- Remarketing tag for PurpleTag.ie-->
+<script type="text/javascript">
+/* <![CDATA[ */
+var google_conversion_id = 997851480;
+var google_conversion_label = "WCjjCNDs0AMQ2ILo2wM";
+var google_custom_params = window.google_tag_params;
+var google_remarketing_only = true;
+/* ]]> */
+</script>
+<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js">
+</script>
+<noscript>
+<div style="display:inline;">
+<img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/997851480/?value=0&amp;label=WCjjCNDs0AMQ2ILo2wM&amp;guid=ON&amp;script=0"/>
+</div>
+</noscript>
+</div>
+
+{% if settings.enable_campaign %}
+{{ 'jquery.colorbox-min.js' | asset_url | script_tag }}
+{{ 'colorbox.css' | asset_url | stylesheet_tag }}
+<div id='campaign' style="display:none"></div>
+<script type="text/javascript">
+    var cookie_update_interval, cookie_file, cookie_name, cookie_campaign_name;
+    cookie_name = 'campaign_user_online_time'; cookie_campaign_name = 'campaign_show';
+
+    function cookieUpdateInterval(){
+        cookie_file = $.cookie(cookie_name);
+        if(parseInt(cookie_file) <= 8) { cookie_file = $.cookie(cookie_name, parseInt(cookie_file) + 1, { expires: 365 });
+        } else {
+            clearInterval(cookie_update_interval);
+            if(!$.cookie(cookie_campaign_name)){ campaignShow(); $.cookie(cookie_campaign_name, '.', { expires: 365 }); }
+        }
+    }
+
+    function campaignShow(){
+      $('#campaign').colorbox({
+          open: true,
+          speed: 500,
+          opacity: 0.7,
+          url: '#',
+          closeButton: true,
+          transition: 'fade',
+          customTitle: 'Subscribe in our newsletter',
+          html: "<form action='//purpletag.us7.list-manage.com/subscribe/post?u=dacd8573487ce94b6a2beef96&amp;id=d7c10ad7ed' method='post' id='mc-embedded-subscribe-form' name='mc-embedded-subscribe-form' class='validate' target='_blank' novalidate><div class='campaign-container-left'><img class='cboxPhoto' src={{ 'campaign-image.png' | asset_url }} alt='Woman representing the Subscribe Campaign'></div><div class='campaign-container-right'><h3 class='campaign-title'>{{ settings.campaign_title }}</h3><p class='campaign-description'>{{ settings.campaign_text }}</p><p class='campaign-subtitle'>ENTER YOUR EMAIL</p><input class='campaign-input' placeholder='myemail@domain.com' type='email' name='EMAIL' maxlength='50'/><br/><input class='campaign-input campaign-button' type='submit' value='SIGN UP'></div></form>",
+          maxWidth: '567px',
+          maxHeight: '344px',
+          width: '100%',
+          height: '100%',
+          onComplete: function(){ $('#cboxClose').removeClass('hidden'); }
+      });
+    }
+
+    $(document).ready(function(){
+        if (!$.cookie(cookie_name)){ $.cookie(cookie_name, '1', { expires: 365 }); }
+        cookie_update_interval = window.setInterval('cookieUpdateInterval()', 1000);
+    });
+</script>
+{% endif %}
+
+<!-- Power Tools view count code -->
+  
+{% if template == 'product' %}
+<script type="text/javascript">
+(function () {
+var oldonload = window.onload;
+window.onload = function(){
+   var scr = document.createElement("script");
+   scr.setAttribute('async', 'true');
+   scr.type = "text/javascript";
+   scr.src = "http://ping.shopifypowertools.com/ping/{{ shop.permanent_domain }}/{{ product.id }}?weight=1{% if collection %}&collection_id={{ collection.handle }}{% endif %}";
+   ((document.getElementsByTagName('head') || [null])[0] ||
+    document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+   if(oldonload){oldonload()}};
+}());
+</script>
+{% endif %}
+<!-- Power Tools view count code -->
+<!-- Google Code for Remarketing Tag -->
+<!--------------------------------------------------
+Remarketing tags may not be associated with personally identifiable information or placed on pages related to sensitive categories. See more information and instructions on how to setup the tag on: http://google.com/ads/remarketingsetup
+--------------------------------------------------->
+<script type="text/javascript">
+/* <![CDATA[ */
+var google_conversion_id = 997851480;
+var google_custom_params = window.google_tag_params;
+var google_remarketing_only = true;
+/* ]]> */
+</script>
+<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js">
+</script>
+<noscript>
+<div style="display:inline;">
+<img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/997851480/?value=0&amp;guid=ON&amp;script=0"/>
+</div>
+</noscript>
+  
+</body>
+</html>

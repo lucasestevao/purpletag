@@ -1,0 +1,76 @@
+<div id="crumbs" class="sixteen columns">
+    <a href="/" title="Home">Home</a>
+    &raquo;
+    Search
+</div><!-- #crumbs -->
+
+{% assign row_limit = settings.products_per_row_coll | plus: -1 %}
+<div>
+    {% if search.performed %}
+        
+        {% paginate search.results by 20 %}
+            {% if search.results == empty %}
+                <div class="sixteen columns row">
+                  <p class="row nomatch">Your search for <strong>&quot;{{search.terms | escape}}&quot;</strong> did not match any shoes.</p>
+<!--                    <h4 class="row">Search for anything in our store:</h4>
+                    <form action="/search" class="inputrow">
+                        <label class="hoverlabel" for="q">Search</label>
+                        <input type="text" id="q" name="q" value="" x-webkit-speech />
+                        <input class="button altcolour normalwidth" type="submit" value="Search"/>
+                    </form>-->
+                </div>
+                
+                
+            {% else %}
+                {% assign productHTML = '' %}
+                {% assign pageHTML = '' %}
+                {% for product in search.results %}
+                    {% if product.type %}
+                        {% capture productHTML %}{{ productHTML }}{% include 'product-list-repeatable-item' with product %}{% endcapture %}
+                    {% else %}
+                        {% capture pageHTML %}{{ pageHTML }}
+                            <li class="row">
+                                <h3 class="sixteen columns">{{ product.title | link_to: product.url }}</h3>
+                                {% if product.featured_image %}
+                                    <div class="three columns imagecont"><a href="{{product.url}}" title="">{{ product.featured_image | product_img_url: 'small' | img_tag }}</a></div>
+                                    <div class="thirteen columns">
+                                {% else %}
+                                    <div class="sixteen columns">
+                                {% endif %}
+                                    {% capture stripdesc %}{% include 'process-html-strip' with product.content %}{% endcapture %}
+                                    {{ stripdesc | strip_html | truncatewords: 40 | highlight: search.terms }}
+                                    <br /><span>View page: {{ product.title | link_to: product.url }} &rarr;</span>
+                                </div>
+                            </li>
+                        {% endcapture %}
+                    {% endif %}
+                {% endfor %}
+                {% unless productHTML == '' %}
+                              <h1 class="sixteen columns nobordermargin">We found these shoes for <strong>&quot;{{search.terms | escape}}&quot;</strong></h1>
+                <div class="productlist row">
+                    {{ productHTML }}
+                </div>
+                {% endunless %}
+                {% unless pageHTML == '' %}
+                {% if productHTML == '' %}
+                    <h3 class="sixteen columns nobordermargin">We found these pages:</h3>
+                {% else %}
+                    <h3 class="sixteen columns nobordermargin">... and these pages:</h3>
+                {% endif %}
+                <ol class="searchresults row">
+                    {{ pageHTML }}
+                </ol>
+                {% endunless %}
+            {% endif %}
+            <div class="sixteen columns">
+                {% include 'pagination' %}
+            </div>
+        {% endpaginate %}
+    {% else %}
+        <h6 class="sixteen columns middletext">Search for anything in our store:</h6>
+        <form class="middleit" action="/search">
+            <input type="text" name="q" class="middleit" placeholder="Search..." value="" x-webkit-speech />
+            <input class="button altcolour" type="submit" value="Search"/>
+        </form>
+    {% endif %}
+</div>

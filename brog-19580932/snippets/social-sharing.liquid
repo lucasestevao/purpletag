@@ -1,0 +1,95 @@
+{% assign social_is_on_the_page = true %}
+
+{% if template contains 'product' %}
+<div class="sharing">
+  <a title="Share on Facebook" onclick="trackSocialShare(this, 'Facebook Share'); return false;" href="https://www.facebook.com/dialog/share?redirect_uri=http://purpletag.ie/pages/thanks-for-sharing&display=popup&app_id=1570358683191824&href={{ shop.url }}{{ product.url }}" target="_blank" class="share facebook"><span>Share</span></a>
+  <a title="Tweet" onclick="trackSocialShare(this, 'Tweet'); return false;" href="https://twitter.com/intent/tweet?url={{ shop.url }}{{ product.url }}&via=PurpleTagShoes&text=Look+what+I+found+on+PurpleTag" target="_blank" class="share twitter"><span>Tweet</span></a>
+  <a title="Share on Google+" onclick="trackSocialShare(this, 'Google+'); return false;" href="https://plus.google.com/share?url={{ shop.url }}{{ product.url }}" target="_blank" class="share gplus"><span>Google+</span></a>
+  <a title="Pin it on Pinterest" onclick="trackSocialShare(this, 'Pin it'); return false;" href="http://pinterest.com/pin/create/button/?url={{ shop.url }}{{ product.url }}&description=Look%20what%20I%20found%20on%20PurpleTag.ie:%20{{ product.title | escape | replace: ' ', '%20' }}&media={{ product.featured_image | product_img_url: 'master' }}" target="_blank" class="share pin"><span>Pin</span></a>
+  {% comment %} Should only show this link on mobile platforms /Fred
+  <a title="Share with WhatsApp" onclick="trackSocialShare(this, 'WhatsApp'); return false;" href="#" target="_blank" class="share whatsapp"><span>WhatsApp</span></a>{% endcomment %}
+</div>
+<!-- Disabled by Fred on 9/8/2013, as Fancy is not used widely in Ireland
+<span class="socialitem thefancycont">
+    <a id="FancyButton" data-count="false" href="http://www.thefancy.com/fancyit?ItemURL={{ shop.url }}{{ product.url }}&Title={{ product.title | escape }}&Category={{ product.type | escape }}&ImageURL={{ product.featured_image | product_img_url: 'master' }}">Fancy</a>
+    <script src="https://www.thefancy.com/fancyit.js" type="text/javascript"></script>
+</span>-->
+{% endif %}
+
+{% comment %} <!-- disabled the native buttons, as we have switched to large "BuzzFeed"-style buttons -->
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+      {"parsetags": "explicit"}
+    </script>
+<span id="googleplusone" class="socialitem plusonecont">
+<div class="g-plusone" data-annotation="none"></div>
+<script type="text/javascript">
+window.___gcfg = {
+  lang: 'en-GB',
+  parsetags: 'explicit'
+};
+(function() {
+    gapi.plusone.go("googleplusone");
+  })();
+</script>
+<!--  <script>
+      (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+      })();
+    </script>-->
+</span>
+{% endcomment %}
+
+{% if template contains 'product' %}
+{% comment %} <!-- disabled the native buttons, as we have switched to large "BuzzFeed"-style buttons -->
+    <span class="socialitem pinterest"><!-- hi -->
+      <a href="http://pinterest.com/pin/create/button/?url={{ shop.url }}{{ product.url }}&description=Look%20what%20I%20found%20on%20PurpleTag.ie:%20{{ product.title | escape | replace: ' ', '%20' }}&media={{ product.featured_image | product_img_url: 'master' }}" class="pin-it-button" target="_blank" count-layout="none"><img border="0" src="//assets.pinterest.com/images/PinExt.png" title="Pin It" /></a>
+    </span>
+    <script type="text/javascript" src="//assets.pinterest.com/js/pinit.js"></script>
+{% endcomment %}
+{% elsif template contains 'article' or template contains 'blog' or template contains 'page' or template contains 'collection' %}
+    {% if template contains 'blog' %}{% assign shareitem = blog.articles.first %}{% endif %}
+    {% if template contains 'article' %}{% assign shareitem = article %}{% endif %}
+    {% if template contains 'page' %}{% assign shareitem = page %}{% endif %}
+    {% if template contains 'collection' %}{% assign shareitem = collection %}{% endif %}
+    {% if shareitem.content contains '<img' %}
+        {% assign media_url = shareitem.content | split: 'src="' %}
+        {% assign media_url = media_url[1] | split: '"' | first | replace: '//cdn', 'http://cdn' | replace: '//static', 'http://static' | replace: 'http:http://', 'http://' %}
+    {% elsif settings.use_logo_image == true %}
+        {% assign media_url = 'logo.png' | asset_url %}
+    {% endif %}
+    {% if media_url %}
+<a href="http://pinterest.com/pin/create/button/?url={{ shop.url }}{{ shareitem.url }}&media={{ media_url }}&description=Look+what+I+found+on+PurpleTag.ie:+{{ shareitem.title | escape }}" class="pin-it-button" target="_blank" count-layout="none"><img border="0" src="//assets.pinterest.com/images/PinExt.png" title="Pin It" /></a>
+        <script type="text/javascript" src="//assets.pinterest.com/js/pinit.js"></script>
+    {% endif %}
+{% endif %}
+
+{% comment %} <!-- disabled the native buttons, as we have switched to large "BuzzFeed"-style buttons -->
+<span class="socialitem twittercont">
+    <a href="https://twitter.com/share" class="twitter-share-button" data-count="none">Tweet</a>
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</span>
+
+<span class="socialitem facebookcontX">
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&appId=628886270486913&version=v2.0";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<div class="fb-share-button" data-href="http://purpletag.ie" data-type="button"></div>
+<!--
+    <fb:like send="false" layout="button" width="100" height="25" show_faces="true"></fb:like>
+    <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script> -->
+</span>
+{% endcomment %}

@@ -1,0 +1,17 @@
+<div class="eleven columns">
+    <h1>Oops! Those shoes are gone!</h1>
+</div>
+<div class="sixteen columns row formfields">
+    <h4 class="row">What shoes are you looking for?</h4>
+    <form action="/search" class="inputrow">
+        <label class="hoverlabel" for="q">Search</label>
+        <input type="text" id="q" name="q" value="" x-webkit-speech />
+        <input class="button altcolour normalwidth" type="submit" value="Search"/>
+    </form>
+</div>
+
+                {% include 'notfound-products' %}
+
+<script type="text/javascript">
+  ga('send', 'event', "404: Page not found" , document.URL, document.referrer, 1, true);
+</script>

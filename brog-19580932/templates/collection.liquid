@@ -1,0 +1,102 @@
+{% assign row_limit = settings.products_per_row_coll | plus: 0 %}
+{% assign total_prods_to_show = row_limit | times: settings.product_rows_on_coll_page %}
+{% paginate collection.products by total_prods_to_show %}
+<div class="sixteen columns">
+    <div id="crumbs">
+        <a href="/" title="Home">Home</a>
+        &raquo;
+        <a href="{{ collection.url }}">{{ collection.title | escape }}</a>
+    </div><!-- #crumbs -->
+    
+    {% if settings.show_social_coll %}
+    <div class="social floating">
+        <span class="label">{{ settings.text_sharethis }}</span>
+        {% include 'social-sharing' %}
+    </div>
+    {% endif %}
+  
+  {% include 'filter-title' %}
+  <h1>{{ filterTitle | escape }}</h1>  
+	
+    <!-- .pagecontent -->
+  
+    <script>
+      var refineSearchOpenCount = 0;
+    </script>
+    <a href="#refineSearchMenu" class="filter-toggle" onclick="$('div.filter-menu').toggle(); $('div#searchCount').toggle(); if(refineSearchOpenCount++ == 0) { ga('send', 'event', 'Open Info' , 'Refine Search', '{{ shownTitle | replace: "'", "\\'" | escape }}'); }; return true;">Refine&nbsp;Search</a>
+
+    <div id="searchCount">{{ collection.products_count }} matching shoes</div>
+   
+</div>
+{% if collection.products.size == 0 %}
+    <div class="sixteen columns">There are no products here.</div>
+{% else %}
+<div>
+      <div class="filter-menu four columns">
+        {% include 'filter-menu' %}
+	  </div>
+      <div class="twelve columns">
+    <div class="productlist">
+    {% assign has_filter_menu = true %}
+    {% for product in collection.products %}
+        {% include 'product-list-repeatable-item' with product %}
+    {% endfor %}
+    </div><!-- .productlist -->
+	  </div>
+</div>
+    
+{% endif %}
+    {% if paginate.pages > 1 or collection.tags.size > 0 %}
+        <div class="twelve columns alpha">
+            <div class="paging">
+            {% if paginate.pages > 1 %}
+                {% if paginate.previous %}
+                    <a class="prev" href="{{ paginate.previous.url }}">&#8249;</a>
+                {% endif %}
+                {% for part in paginate.parts %}
+                    {% if part.is_link %}
+                        <span class="page">{{ part.title | link_to: part.url }}</span>
+                    {% else %}
+                        <span class="page current">{{ part.title }}</span>
+                    {% endif %}        
+                {% endfor %}      
+                {% if paginate.next %}
+                    <a class="next" href="{{ paginate.next.url }}">&#8250;</a>
+                {% endif %}
+            {% endif %}
+            </div>&nbsp;
+        </div> 
+<script type="text/javascript">
+  $( window ).load(function() {
+	  $("div.paging").hide();
+  });
+</script>
+    {% endif %}
+
+
+{% if settings.use_inf_scroll == true %}
+<script>
+var scrollCount = 0;
+$('.productlist').infinitescroll({
+    navSelector  : "div.paging",
+    nextSelector : "div.paging .next",
+    itemSelector : "#maincontent .productlist .product, #maincontent .productlist .cf",
+    loading: {
+      img         : '{{ settings.loading_graphic | asset_url }}',
+      msgText     : 'Loading more shoes, please wait...',
+      finishedMsg : 'That\'s it, no more shoes in this collection',
+      speed: 400
+    },
+    bufferPx : 500,
+    animate      : false
+}, function(items){    
+    $(items).find('img:not(.altimg)').each(function(){
+        $(this).trigger('initprodimg');
+    });
+  // track the scroll in Google Analytics
+  scrollCount = scrollCount + 1;
+  ga('send', 'event', 'Scroll', 'InfiniteScroll', window.location.pathname, scrollCount);
+});
+</script>
+{% endif %}
+{% endpaginate %}
